@@ -9,6 +9,7 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 client_init_time=0
 
 def analysis_client():
+    print 'analysis client'
     start=[]
     getend=[]
     shwend=[]
@@ -24,8 +25,10 @@ def analysis_client():
         if "shw_end" in lin:
             shwend.append(float(word[1]))
     f.close()
-    print np.average([getend[i]-start[i] for i in range(len(start))])
-    print np.average([shwend[i]-getend[i] for i in range(len(getend))])
+    print"getend-start"
+    print np.average([getend[i]-start[i] for i in range(len(start))])*1000,"ms"
+    print"showend-getend"
+    print np.average([shwend[i]-getend[i] for i in range(len(getend))])*1000,"ms"
     for i,s in enumerate(start):
         plt.annotate(str(i),
              xy=(s, 0.5), xycoords='data',
@@ -51,9 +54,9 @@ def analysis_client():
     plt.plot(start,[0.5 for s in start],"o")
     plt.plot(getend,[1 for s in getend],"o")
     plt.plot(shwend,[1.5 for s in shwend],"o")
-    print len(start)
 
 def analysis_server():
+    print "server analysis"
     start=[]
     capend=[]
     proend=[]
@@ -75,8 +78,10 @@ def analysis_server():
     #start-=ori_start_1
     #capend-=ori_start_1
     #proend-=ori_start_1
-    print np.average([capend[i]-start[i] for i in range(len(start))])
-    print np.average([proend[i]-capend[i] for i in range(len(capend))])
+    print"capend-start"
+    print np.average([capend[i]-start[i] for i in range(len(start))])*1000,"ms"
+    print"proc-caend"
+    print np.average([proend[i]-capend[i] for i in range(len(capend))])*1000,"ms"
 
     for i,s in enumerate(start):
         plt.annotate(str(i),
