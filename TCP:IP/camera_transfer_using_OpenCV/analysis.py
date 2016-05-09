@@ -29,6 +29,8 @@ def analysis_client():
     print np.average([getend[i]-start[i] for i in range(len(start))])*1000,"ms"
     print"showend-getend"
     print np.average([shwend[i]-getend[i] for i in range(len(getend))])*1000,"ms"
+    print "shwend-start"
+    print np.average([sh-st for sh,st in zip(shwend,start)])*1000,ms
     for i,s in enumerate(start):
         plt.annotate(str(i),
              xy=(s, 0.5), xycoords='data',
@@ -55,6 +57,8 @@ def analysis_client():
     plt.plot(getend,[1 for s in getend],"o")
     plt.plot(shwend,[1.5 for s in shwend],"o")
 
+    return start,getend,shwend
+
 def analysis_server():
     print "server analysis"
     start=[]
@@ -74,13 +78,9 @@ def analysis_server():
     start=np.array(start)
     capend=np.array(capend)
     proend=np.array(proend)
-    #ori_start_1=start[1]-client_init_time
-    #start-=ori_start_1
-    #capend-=ori_start_1
-    #proend-=ori_start_1
     print"capend-start"
     print np.average([capend[i]-start[i] for i in range(len(start))])*1000,"ms"
-    print"proc-caend"
+    print"proc-capsend"
     print np.average([proend[i]-capend[i] for i in range(len(capend))])*1000,"ms"
 
     for i,s in enumerate(start):
@@ -101,9 +101,11 @@ def analysis_server():
              xytext=(+10, +30), textcoords='offset points', fontsize=16,
              arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
 
-    plt.plot(start[1:],[2 for s in start[1:]],"o")
-    plt.plot(capend[1:],[2.5 for s in capend[1:]],"o")
-    plt.plot(proend[1:],[3 for s in proend[1:]],"o")
+    plt.plot(start,[2 for s in start],"o")
+    plt.plot(capend,[2.5 for s in capend],"o")
+    plt.plot(proend,[3 for s in proend],"o")
+
+    return start,capend, proend
 
 def main():
     #adjust graph
@@ -112,8 +114,8 @@ def main():
     minorLocator=MultipleLocator(0.1)
     fig,ax=plt.subplots()
 
-    analysis_client()
-    analysis_server()
+    c_start,getend,shwend=analysis_client()
+    s_start,capend,proend=analysis_server()
 
     leflim=0
     riglim=2
@@ -123,6 +125,8 @@ def main():
     ax.xaxis.set_major_formatter(majorFormatter)
     ax.xaxis.set_minor_locator(minorLocator)
 
+    print "transfer time"
+    print np.average([getend-proend])*1000 ,"ms"
 
     plt.show()
 
