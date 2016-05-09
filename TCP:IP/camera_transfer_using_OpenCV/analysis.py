@@ -103,9 +103,9 @@ def analysis_server():
              xytext=(+10, +30), textcoords='offset points', fontsize=16,
              arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
 
-    plt.plot(start[1:],[2 for s in start[1:]],"o")
-    plt.plot(capend[1:],[2.5 for s in capend[1:]],"o")
-    plt.plot(proend[1:],[3 for s in proend[1:]],"o")
+    plt.plot(start,[2 for s in start],"o")
+    plt.plot(capend,[2.5 for s in capend],"o")
+    plt.plot(proend,[3 for s in proend],"o")
 
     return start,capend, proend
 
