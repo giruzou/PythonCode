@@ -80,7 +80,7 @@ def analysis_server():
     #proend-=ori_start_1
     print"capend-start"
     print np.average([capend[i]-start[i] for i in range(len(start))])*1000,"ms"
-    print"proc-caend"
+    print"proc-capsend"
     print np.average([proend[i]-capend[i] for i in range(len(capend))])*1000,"ms"
 
     for i,s in enumerate(start):
