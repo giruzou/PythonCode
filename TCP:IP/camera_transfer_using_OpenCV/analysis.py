@@ -29,6 +29,8 @@ def analysis_client():
     print np.average([getend[i]-start[i] for i in range(len(start))])*1000,"ms"
     print"showend-getend"
     print np.average([shwend[i]-getend[i] for i in range(len(getend))])*1000,"ms"
+    print "shwend-start"
+    print np.average([sh-st for sh,st in zip(shwend,start)])*1000,ms
     for i,s in enumerate(start):
         plt.annotate(str(i),
              xy=(s, 0.5), xycoords='data',
@@ -123,6 +125,8 @@ def main():
     ax.xaxis.set_major_formatter(majorFormatter)
     ax.xaxis.set_minor_locator(minorLocator)
 
+    print "transfer time"
+    print np.average([getend-proend])*1000 ,"ms"
 
     plt.show()
 
