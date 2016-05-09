@@ -76,10 +76,6 @@ def analysis_server():
     start=np.array(start)
     capend=np.array(capend)
     proend=np.array(proend)
-    #ori_start_1=start[1]-client_init_time
-    #start-=ori_start_1
-    #capend-=ori_start_1
-    #proend-=ori_start_1
     print"capend-start"
     print np.average([capend[i]-start[i] for i in range(len(start))])*1000,"ms"
     print"proc-capsend"
