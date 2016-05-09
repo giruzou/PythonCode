@@ -55,6 +55,8 @@ def analysis_client():
     plt.plot(getend,[1 for s in getend],"o")
     plt.plot(shwend,[1.5 for s in shwend],"o")
 
+    return start,getend,shwend
+
 def analysis_server():
     print "server analysis"
     start=[]
@@ -105,6 +107,8 @@ def analysis_server():
     plt.plot(capend[1:],[2.5 for s in capend[1:]],"o")
     plt.plot(proend[1:],[3 for s in proend[1:]],"o")
 
+    return start,capend, proend
+
 def main():
     #adjust graph
     majorLocator=MultipleLocator(1)
@@ -112,8 +116,8 @@ def main():
     minorLocator=MultipleLocator(0.1)
     fig,ax=plt.subplots()
 
-    analysis_client()
-    analysis_server()
+    c_start,getend,shwend=analysis_client()
+    s_start,capend,proend=analysis_server()
 
     leflim=0
     riglim=2
