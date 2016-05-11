@@ -33,6 +33,7 @@ class TCPHandler(SocketServer.BaseRequestHandler):
         ret, frame=capture.read()
         cap_end=time.time()-init_time
         jpegstring=cv2.cv.EncodeImage('.jpeg',cv2.cv.fromarray(frame)).tostring()  
+        #print jpegstring
         proc_end=time.time()-init_time
         self.request.send(jpegstring)
         info.append(TimerInfo(cap_start,cap_end,proc_end))
@@ -40,7 +41,7 @@ class TCPHandler(SocketServer.BaseRequestHandler):
   
 #環境に応じて変更
 HOST = '127.0.0.1'
-PORT = 12345  
+PORT = 9876
 
 #カメラの設定
 capture=cv2.VideoCapture(0)

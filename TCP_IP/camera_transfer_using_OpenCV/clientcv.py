@@ -7,22 +7,29 @@ import cv2
 import time
 #define IP port for each env
 HOST='127.0.0.1'
-PORT=12345
+PORT=9876
 timer_info=[]
 init_time=0.0
 
 def get_image():
+    global timer_info
     sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     sock.connect((HOST,PORT))
     sock.send('HELLO\n')
     buf=''
     recvlen=100
+    recv_start=time.time()-init_time
     while recvlen>0:
         receivedstr=sock.recv(1024*8)
         recvlen=len(receivedstr)
         buf+=receivedstr
     sock.close()
+    recv_end=time.time()-init_time
     narray=numpy.fromstring(buf,dtype='uint8')
+    decode_end=time.time()-init_time
+    timer_info.append(['recv_start',recv_start])
+    timer_info.append(['recv_end',recv_end])
+    #timer_info.append(['decode_end',decode_end])
     return cv2.imdecode(narray,1)
 
 def collect_image_info():
@@ -34,7 +41,7 @@ def collect_image_info():
     while counter<20:
         counter+=1
         start=time.time()-init_time
-        timer_info.append(['start',start])
+        timer_info.append(['getstart',start])
         img=get_image()
         get_end=time.time()-init_time
         timer_info.append(['getend',get_end])

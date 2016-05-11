@@ -10,7 +10,9 @@ client_init_time=0
 
 def analysis_client():
     print 'analysis client'
-    start=[]
+    getstart=[]
+    recv_start=[]
+    recv_end=[]
     getend=[]
     shwend=[]
     f=open("res.txt",'r')
@@ -18,20 +20,26 @@ def analysis_client():
     xs=[]
     for lin in lines:
         word=lin.split()
-        if "start" in lin:
-            start.append(float(word[1]))
+        if "getstart" in lin:
+            getstart.append(float(word[1]))
+        if "recv_start" in lin:
+            recv_start.append(float(word[1]))
+        if "recv_end" in lin:
+            recv_end.append(float(word[1]))
         if "getend" in lin:
             getend.append(float(word[1]))
         if "shw_end" in lin:
             shwend.append(float(word[1]))
     f.close()
-    print"getend-start"
-    print np.average([getend[i]-start[i] for i in range(len(start))])*1000,"ms"
+    print"getend-getstart"
+    print np.average([getend[i]-getstart[i] for i in range(len(getstart))])*1000,"ms"
+    print"recv:end-start"
+    print np.average([e-s for e,s in zip(recv_end,recv_start)])*1000,"ms"
     print"showend-getend"
     print np.average([shwend[i]-getend[i] for i in range(len(getend))])*1000,"ms"
-    print "shwend-start"
-    print np.average([sh-st for sh,st in zip(shwend,start)])*1000,ms
-    for i,s in enumerate(start):
+    print "shwend-getstart"
+    print np.average([sh-st for sh,st in zip(shwend,getstart)])*1000,"ms"
+    for i,s in enumerate(getstart):
         plt.annotate(str(i),
              xy=(s, 0.5), xycoords='data',
              xytext=(+10, +30), textcoords='offset points', fontsize=16,
@@ -51,13 +59,13 @@ def analysis_client():
 
     global client_init_time
     #client_init_time=start[1]+(getend[1]-start[1])/2.0
-    client_init_time=start[0]+(getend[0]-start[0])/2.0
+    client_init_time=getstart[0]+(getend[0]-getstart[0])/2.0
     client_init_time=0
-    plt.plot(start,[0.5 for s in start],"o")
+    plt.plot(getstart,[0.5 for s in getstart],"o")
     plt.plot(getend,[1 for s in getend],"o")
     plt.plot(shwend,[1.5 for s in shwend],"o")
 
-    return start,getend,shwend
+    return getstart,getend,shwend
 
 def analysis_server():
     print "server analysis"
