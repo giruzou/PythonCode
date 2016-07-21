@@ -27,10 +27,13 @@ class Layer():
         self.f=func
         self.w=weight
         self.b=bias
-    def set_unit_value(self,u):
-        self.u=u        
+    def set_unit(self,u):
+        self.u=u      
+    def set_unit_from_previous_layer(self,u):
+        self.u=self.w.dot(u)+self.b  
     def pass_next_layer(self):
-        return self.f(self.w.dot(self.u)+self.b)
+        #activate unit
+        return self.f(self.u)
     def _upd_w(self,w):
         self.w=w
     def _upd_b(self,b):
@@ -55,7 +58,7 @@ def prepare_input_param():
 def prepare_input_layer():
     w,b,input_value=prepare_input_param()
     input_layer=Layer(identity_func,w,b)
-    input_layer.set_unit_value(input_value)
+    input_layer.set_unit(input_value)
     return input_layer    
 
 def prepare_test_param():
@@ -87,13 +90,14 @@ def prepare_mediant_layer():
     print('input_value\n %s'%input_value)
     mediant_layer=Layer(identity_func,w,b)
     print(input_layer)
-    mediant_layer.set_unit_value(input_value)
+    mediant_layer.set_unit(input_value)
     print("nextlay=\n%s"%mediant_layer.pass_next_layer())
     return mediant_layer
 
 def main():
     input_layer=prepare_input_layer()
-    print("input_layer=\n%s"%input_layer.pass_next_layer())
-        
+    print("input_layer=\n%s"%input_layer)
+    print("output unit vector value=\n%s"%input_layer.pass_next_layer())
+                
 if __name__=='__main__':
     main()
