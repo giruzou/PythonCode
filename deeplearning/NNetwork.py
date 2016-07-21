@@ -53,6 +53,10 @@ def prepare_test_param():
                 0,
                 -1]).reshape((-1,1))
     return w,b,x
+    
+def prepare_init_param():
+    pass
+    
 def prepare_random_param():
     
     #make 3 by 3 matrix
@@ -62,14 +66,21 @@ def prepare_random_param():
     #initialize input value
     x=np.random.rand(3,1)
     return w,b,x
-def main():
+
+def prepare_init_layer():
+    pass    
+
+def prepare_mediant_layer():
     print('start\n')
     w,b,input_value=prepare_test_param()
     print('input_value\n %s'%input_value)
-    input_layer=Layer(identity_func,w,b)
+    mediant_layer=Layer(identity_func,w,b)
     print(input_layer)
-    input_layer.set_unit_value(input_value)
-    print("nextlay=\n%s"%input_layer.pass_next_layer())
+    mediant_layer.set_unit_value(input_value)
+    print("nextlay=\n%s"%mediant_layer.pass_next_layer())
+    return mediant_layer
 
+def main():
+    prepare_mediant()
 if __name__=='__main__':
     main()
