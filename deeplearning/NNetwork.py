@@ -41,6 +41,23 @@ class Layer():
 class NNetwork():        
     pass
             
+def prepare_input_param():
+    #3 by 3 identity matrix
+    w=np.identity(3)
+    #3 by 1 zero vector  
+    b=np.zeros([3,1]) 
+    #create 3 by 1 vector
+    x=np.array([1,
+                2,
+                3]).reshape((-1,1))
+    return w,b,x
+
+def prepare_input_layer():
+    w,b,input_value=prepare_input_param()
+    input_layer=Layer(identity_func,w,b)
+    input_layer.set_unit_value(input_value)
+    return input_layer    
+
 def prepare_test_param():
     w=np.array(([0,-1,1],
                 [1,0,1],
@@ -53,16 +70,7 @@ def prepare_test_param():
                 0,
                 -1]).reshape((-1,1))
     return w,b,x
-    
-def prepare_input_param():
-    w,b,input_value=prepare_input_param()
-    print('input_value\n %s'%input_value)
-    input_layer=Layer(identity_func,w,b)
-    print(input_layer)
-    input_layer.set_unit_value(input_value)
-    print("nextlay=\n%s"%input_layer.pass_next_layer())
-    return input_layer    
-    
+        
 def prepare_random_param():
     
     #make 3 by 3 matrix
@@ -71,17 +79,6 @@ def prepare_random_param():
     b=np.random.rand(3,1)
     #initialize input value
     x=np.random.rand(3,1)
-    return w,b,x
-
-def prepare_input_layer():
-    #3 by 3 identity matrix
-    w=np.identity(3)
-    #3 by 1 zero vector  
-    b=np.zeros(3:1) 
-    #create 3 by 1 vector
-    x=np.array([1,
-                0,
-                -1]).reshape((-1,1))
     return w,b,x
 
 def prepare_mediant_layer():
@@ -95,6 +92,8 @@ def prepare_mediant_layer():
     return mediant_layer
 
 def main():
-    prepare_input_layer()
+    input_layer=prepare_input_layer()
+    print("input_layer=\n%s"%input_layer.pass_next_layer())
+        
 if __name__=='__main__':
     main()
