@@ -54,8 +54,14 @@ def prepare_test_param():
                 -1]).reshape((-1,1))
     return w,b,x
     
-def prepare_init_param():
-    pass
+def prepare_input_param():
+    w,b,input_value=prepare_input_param()
+    print('input_value\n %s'%input_value)
+    input_layer=Layer(identity_func,w,b)
+    print(input_layer)
+    input_layer.set_unit_value(input_value)
+    print("nextlay=\n%s"%input_layer.pass_next_layer())
+    return input_layer    
     
 def prepare_random_param():
     
@@ -67,8 +73,16 @@ def prepare_random_param():
     x=np.random.rand(3,1)
     return w,b,x
 
-def prepare_init_layer():
-    pass    
+def prepare_input_layer():
+    #3 by 3 identity matrix
+    w=np.identity(3)
+    #3 by 1 zero vector  
+    b=np.zeros(3:1) 
+    #create 3 by 1 vector
+    x=np.array([1,
+                0,
+                -1]).reshape((-1,1))
+    return w,b,x
 
 def prepare_mediant_layer():
     print('start\n')
@@ -81,6 +95,6 @@ def prepare_mediant_layer():
     return mediant_layer
 
 def main():
-    prepare_mediant()
+    prepare_input_layer()
 if __name__=='__main__':
     main()
