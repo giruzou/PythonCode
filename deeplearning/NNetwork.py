@@ -82,11 +82,19 @@ def prepare_mediant_layer(input_layer):
     mediant_layer.set_unit_from_previous_layer(input_layer.pass_next_layer())
     return mediant_layer
 
+def prepare_output_layer(mediant_layer):
+    w,b,sig=prepare_test_param()
+    output_layer=Layer(sig,w,b)
+    output_layer.set_unit_from_previous_layer(mediant_layer.pass_next_layer())
+    return output_layer
+
 def main():
     input_layer=prepare_input_layer()
     print("input_layer=\n%s"%input_layer)
     mediant_layer=prepare_mediant_layer(input_layer)
     print("mediant_layer=\n%s"%mediant_layer)
+    output_layer=prepare_mediant_layer(mediant_layer)
+    print("output_layer=\n%s"%output_layer)
                     
 if __name__=='__main__':
     main()
