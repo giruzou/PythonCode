@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def sigmoid(x):
     return 1.0/(1+np.exp(-x))
-#can we apply for numpy array????
+#usage for ndarray of numpy :print(np.vectorize(step_func)(np.array([-1,0,1])))
 def step_func(x):
     if x>0:
         return 1
