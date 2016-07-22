@@ -39,26 +39,22 @@ class Layer():
     def _upd_b(self,b):
         self.b=b
     def __str__(self):
-        return "w=\n%s\nb=\n%s"%(self.w,self.b)
+        return "w=\n%s\nb=\n%s\nu=\n%s\nf(u)=\n%s"%(self.w,self.b,self.u,self.f(self.u))
         
 class NNetwork():        
     pass
-            
-def prepare_input_param():
+
+def prepare_input_layer():
     #3 by 3 identity matrix
     w=np.identity(3)
     #3 by 1 zero vector  
     b=np.zeros([3,1]) 
-    #create 3 by 1 vector
-    x=np.array([1,
-                2,
-                3]).reshape((-1,1))
-    return w,b,x
-
-def prepare_input_layer():
-    w,b,input_value=prepare_input_param()
     input_layer=Layer(identity_func,w,b)
-    input_layer.set_unit(input_value)
+    input_layer.set_unit(#create 3 by 1 vector
+                        np.array([1,
+                                  2,
+                                  3]).reshape((-1,1))
+                        )
     return input_layer    
 
 def prepare_test_param():
@@ -69,10 +65,7 @@ def prepare_test_param():
     b=np.array([1,
                 1,
                 1]).reshape((-1,1))
-    x=np.array([1,
-                0,
-                -1]).reshape((-1,1))
-    return w,b,x
+    return w,b,sigmoid
         
 def prepare_random_param():
     
@@ -81,23 +74,19 @@ def prepare_random_param():
     #make column vector
     b=np.random.rand(3,1)
     #initialize input value
-    x=np.random.rand(3,1)
-    return w,b,x
+    return w,b,sigmoid
 
-def prepare_mediant_layer():
-    print('start\n')
-    w,b,input_value=prepare_test_param()
-    print('input_value\n %s'%input_value)
-    mediant_layer=Layer(identity_func,w,b)
-    print(input_layer)
-    mediant_layer.set_unit(input_value)
-    print("nextlay=\n%s"%mediant_layer.pass_next_layer())
+def prepare_mediant_layer(input_layer):
+    w,b,sig=prepare_test_param()
+    mediant_layer=Layer(sig,w,b)
+    mediant_layer.set_unit_from_previous_layer(input_layer.pass_next_layer())
     return mediant_layer
 
 def main():
     input_layer=prepare_input_layer()
     print("input_layer=\n%s"%input_layer)
-    print("output unit vector value=\n%s"%input_layer.pass_next_layer())
-                
+    mediant_layer=prepare_mediant_layer(input_layer)
+    print("mediant_layer=\n%s"%mediant_layer)
+                    
 if __name__=='__main__':
     main()
