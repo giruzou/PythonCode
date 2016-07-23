@@ -140,8 +140,10 @@ def main():
     initial_param=InitializeParam()
     network=initialize_network(initial_param)
     #create 3 by 1 vector
-    input_value,teaching_set=testdata()
-    for loop in range(100):
+    input_value,teaching_set=randomdata()
+    print("teaching_set=\n%s"%teaching_set)
+    #training loop!
+    for loop in range(3000):
         for l,layer in enumerate(network.layers):
             for i in range(layer.w.shape[0]):
                 for j in range(layer.w.shape[1]):
