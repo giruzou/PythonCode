@@ -75,16 +75,16 @@ class InitializeParam():
 
     def prepare_mediant_param_random(self):    
         #make 3 by 3 matrix
-        w=np.random.randn(3,3)
+        w=np.random.rand(3,3)
         #make column vector
-        b=np.random.randn(3,1)
+        b=np.random.rand(3,1)
         return w,b,sigmoid
 
     def prepare_random_param(self):
         #make 3 by 3 matrix
-        w=np.random.randn(3,3)
+        w=np.random.rand(3,3)
         #make column vector
-        b=np.random.randn(3,1)
+        b=np.random.rand(3,1)
         return w,b,sigmoid
 
 class NNetwork():        
@@ -124,26 +124,26 @@ def initialize_network(initial_param):
     return NNetwork(layers)    
 
 def testdata():
-    input_value=(np.array([1,
-                           2,
-                           -4]).reshape((-1,1)))
+    input_value=(np.array([3.5,
+                           -0.2,
+                           -9]).reshape((-1,1)))
     teaching_set=(np.array([0,
                             0,
                             1]).reshape((-1,1)))
     return input_value,teaching_set
 def randomdata():
-    input_value=np.random.randn(3,1)
-    teaching_set=np.random.randn(3,1)
+    input_value=np.random.rand(3,1)
+    teaching_set=np.random.rand(3,1)
     return input_value,teaching_set
 
 def main():
     initial_param=InitializeParam()
     network=initialize_network(initial_param)
     #create 3 by 1 vector
-    input_value,teaching_set=randomdata()
+    input_value,teaching_set=testdata()
     print("teaching_set=\n%s"%teaching_set)
     #training loop!
-    for loop in range(3000):
+    for loop in range(1000):
         for l,layer in enumerate(network.layers):
             for i in range(layer.w.shape[0]):
                 for j in range(layer.w.shape[1]):
