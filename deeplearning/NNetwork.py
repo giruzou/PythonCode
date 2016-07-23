@@ -70,67 +70,82 @@ class Layer():
         self.b=b
     def __str__(self):
         return "w=\n%s\nb=\n%s\nu=\n%s\nf(u)=\n%s\n"%(self.w,self.b,self.u,self.f(self.u))
+
+class InitializeParam():
+    def prepare_input_param():
+        #3 by 3 identity matrix
+        w=np.identity(3)
+        #3 by 1 zero vector  
+        b=np.zeros([3,1]) 
+        return w,b,identity_func    
+
+    def prepare_mediant_param():
+        w=np.array(([0,-1,1],
+                    [1,0,1],
+                    [0,0,1]))
+        #set b and x as column vector
+        b=np.array([1,
+                    1,
+                    1]).reshape((-1,1))
+        return w,b,sigmoid
+            
+    def prepare_mediant_param_random():
         
+        #make 3 by 3 matrix
+        w=np.random.rand(3,3)
+        #make column vector
+        b=np.random.rand(3,1)
+        return w,b,sigmoid
+
+    def prepare_output_param():
+        w=np.array(([0,-1,1],
+                    [1,0,1],
+                    [0,0,1]))
+        #set b and x as column vector
+        b=np.array([1,
+                    1,
+                    1]).reshape((-1,1))
+        return w,b,sigmoid
+
+    def prepare_input_layer():
+        w,b,id_func=prepare_input_param()
+        input_layer=Layer(id_func,w,b)
+        return  input_layer
+
+    def prepare_mediant_layer(input_layer):
+        w,b,sig=prepare_mediant_param()
+        mediant_layer=Layer(sig,w,b)
+        mediant_layer.set_unit_from_previous_layer(input_layer.pass_next_layer())
+        return mediant_layer
+
+    def prepare_output_layer(mediant_layer):
+        w,b,sig=prepare_output_param()
+        output_layer=Layer(sig,w,b)
+        output_layer.set_unit_from_previous_layer(mediant_layer.pass_next_layer())
+        return output_layer
+
+    def prepare_random_param():
+        #make 3 by 3 matrix
+        w=np.random.rand(3,3)
+        #make column vector
+        b=np.random.rand(3,1)
+        return w,b,sigmoid
+
+    def prepare_layer(previous_layer):
+        w,b,func=prepare_param()
+        layer=Layer(func,w,b)
+        layer.set_unit_from_previous_layer(previous_layer.pass_next_layer())
+
 class NNetwork():        
-    def __init__(self,layers):
+    def __init__(self,layers,initial_class):
         self.layers=layers
+        self.initial_class=initial_class
     def _register_weights(self):
         self.ws=[lay.get_w for lay in self.layers]
     def _register_bias(self):
         self.bs=[lay.get_b for lay in self.layers]
 
-def prepare_input_param():
-    #3 by 3 identity matrix
-    w=np.identity(3)
-    #3 by 1 zero vector  
-    b=np.zeros([3,1]) 
-    return w,b,identity_func    
 
-def prepare_mediant_param():
-    w=np.array(([0,-1,1],
-                [1,0,1],
-                [0,0,1]))
-    #set b and x as column vector
-    b=np.array([1,
-                1,
-                1]).reshape((-1,1))
-    return w,b,sigmoid
-        
-def prepare_mediant_param_random():
-    
-    #make 3 by 3 matrix
-    w=np.random.rand(3,3)
-    #make column vector
-    b=np.random.rand(3,1)
-    #initialize input value
-    return w,b,sigmoid
-
-def prepare_output_param():
-    w=np.array(([0,-1,1],
-                [1,0,1],
-                [0,0,1]))
-    #set b and x as column vector
-    b=np.array([1,
-                1,
-                1]).reshape((-1,1))
-    return w,b,sigmoid
-
-def prepare_input_layer():
-    w,b,id_func=prepare_input_param()
-    input_layer=Layer(id_func,w,b)
-    return  input_layer
-
-def prepare_mediant_layer(input_layer):
-    w,b,sig=prepare_mediant_param()
-    mediant_layer=Layer(sig,w,b)
-    mediant_layer.set_unit_from_previous_layer(input_layer.pass_next_layer())
-    return mediant_layer
-
-def prepare_output_layer(mediant_layer):
-    w,b,sig=prepare_output_param()
-    output_layer=Layer(sig,w,b)
-    output_layer.set_unit_from_previous_layer(mediant_layer.pass_next_layer())
-    return output_layer
 
 def network_output(x):
     input_layer=prepare_input_layer()
@@ -145,7 +160,7 @@ def network_output(x):
 def get_square_error(input_value,teaching_set):
     return np.sum((network_output(input_value)-teaching_set)**2)/2.0
 
-def main():
+def calc_square_error():
     #create 3 by 1 vector
     input_value=(np.array([1,
                            2,
@@ -156,9 +171,12 @@ def main():
     output_value=network_output(input_value)
     print("output_value=\n%s"%output_value)               
     print("square error=\n%s"%get_square_error(input_value,teaching_set))
-    
+
 def diff_square_error(layer_index,unit_index):
     pass
+
+def main():
+    initial_class=InitializeParam()
 
 if __name__=='__main__':
     main()
