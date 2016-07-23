@@ -2,35 +2,10 @@
 #Author S.Terasaki
 #Data 20.7.2016 
 import numpy as np
-import matplotlib.pyplot as plt
 
 #const
 h=0.000001
 epsilon=0.001
-
-def differential(f,a):
-    return (f(a+h)-f(a))/h
-
-def test_get_local_minimum(f,init_pt):
-    plt.plot(init_pt,f(init_pt),"bo")
-    xs=[]
-    x_old=init_pt
-    xs.append(init_pt)
-    for i in range(100):
-        x_new=x_old-epsilon * differential(f,x_old)
-        print(x_new)
-        xs.append(x_new) 
-        #update x
-        x_old=x_new
-    plt.plot(xs,map(f,xs))
-    plt.plot(xs,map(f,xs),"g*")
-    plt.xlim(-np.pi,np.pi)
-    plt.ylim(-1.5,1.5)
-    xs_f=np.arange(-np.pi,np.pi,0.01)
-    ys_f=map(f,xs_f)
-    plt.plot(xs_f,ys_f)
-    plt.plot(x_new,f(x_new),"ro")
-    plt.show()
 
 def sigmoid(x):
     return 1.0/(1+np.exp(-x))
@@ -66,23 +41,7 @@ class Layer():
     
     def pass_next_layer(self):
         #activate unit
-        return self.f(self.u)
-    
-    def get_w(self):
-        return self.w
-    
-    def get_b(self):
-        return self.b
-    
-    def get_u(self):
-        return self.u
-    
-    def _upd_w(self,w):
-        self.w=w
-    
-    def _upd_b(self,b):
-        self.b=b
-    
+        return self.f(self.u)    
     def __str__(self):
         return "w=\n%s\nb=\n%s\nu=\n%s\nf(u)=\n%s\n"%(self.w,self.b,self.u,self.f(self.u))
 
@@ -130,14 +89,7 @@ class InitializeParam():
 
 class NNetwork():        
     def __init__(self,layers):
-        self.layers=layers
-    
-    def _register_weights(self):
-        self.ws=[lay.get_w for lay in self.layers]
-    
-    def _register_bias(self):
-        self.bs=[lay.get_b for lay in self.layers]
-    
+        self.layers=layers    
     def upd_layer(self,index,layer):
         self.layers[index]=layer
         
@@ -171,22 +123,32 @@ def initialize_network(initial_param):
     layers=[input_layer,mediant_layer,output_layer]
     return NNetwork(layers)    
 
-def main():
-    initial_param=InitializeParam()
-    network=initialize_network(initial_param)
-    #create 3 by 1 vector
-    input_value=(np.array([9,
+def testdata():
+    input_value=(np.array([1,
                            2,
                            -4]).reshape((-1,1)))
     teaching_set=(np.array([0,
                             0,
                             1]).reshape((-1,1)))
-    for loop in range(1000):
+    return input_value,teaching_set
+def randomdata():
+    input_value=np.random.randn(3,1)
+    teaching_set=np.random.randn(3,1)
+    return input_value,teaching_set
+
+def main():
+    initial_param=InitializeParam()
+    network=initialize_network(initial_param)
+    #create 3 by 1 vector
+    input_value,teaching_set=testdata()
+    for loop in range(100):
         for l,layer in enumerate(network.layers):
             for i in range(layer.w.shape[0]):
                 for j in range(layer.w.shape[1]):
                     delta=epsilon*partial_derivative(network,l,i,j,input_value,teaching_set)
                     network.layers[l].w[i][j]-=delta
+                    if square_error(network.get_output(input_value),teaching_set)<0.01:
+                        break
     print("sqerror=\n%s"%square_error(network.get_output(input_value),teaching_set))
     #print([l.w for l in network.layers ])
     print("optimized output\n%s"%network.get_output(input_value))
