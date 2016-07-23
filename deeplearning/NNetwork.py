@@ -4,6 +4,30 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def differential(f,a):
+    return (f(a+h)-f(a))/h
+
+def test_get_local_minimum(f,init_pt):
+    plt.plot(init_pt,f(init_pt),"bo")
+    xs=[]
+    x_old=init_pt
+    xs.append(init_pt)
+    for i in range(100):
+        x_new=x_old-epsilon * differential(f,x_old)
+        print(x_new)
+        xs.append(x_new) 
+        #update x
+        x_old=x_new
+    plt.plot(xs,map(f,xs))
+    plt.plot(xs,map(f,xs),"g*")
+    plt.xlim(-np.pi,np.pi)
+    plt.ylim(-1.5,1.5)
+    xs_f=np.arange(-np.pi,np.pi,0.01)
+    ys_f=map(f,xs_f)
+    plt.plot(xs_f,ys_f)
+    plt.plot(x_new,f(x_new),"ro")
+    plt.show()
+
 def sigmoid(x):
     return 1.0/(1+np.exp(-x))
 #usage for ndarray of numpy :print(np.vectorize(step_func)(np.array([-1,0,1])))
