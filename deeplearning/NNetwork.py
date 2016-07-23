@@ -117,14 +117,24 @@ def network_output(x):
     output_layer=prepare_output_layer(mediant_layer)
     print("output_layer=\n%s"%output_layer)
     return output_layer.pass_next_layer()
-    
+
+def get_square_error(input_value,teaching_set):
+    return np.sum((network_output(input_value)-teaching_set)**2)/2.0
+
 def main():
     #create 3 by 1 vector
     input_value=(np.array([1,
                            2,
                            3]).reshape((-1,1)))
+    teaching_set=(np.array([0,
+                            0,
+                            1]).reshape((-1,1)))
     output_value=network_output(input_value)
     print("output_value=\n%s"%output_value)               
+    print("square error=\n%s"%get_square_error(input_value,teaching_set))
     
+def diff_square_error(layer_index,unit_index):
+    pass
+
 if __name__=='__main__':
     main()
