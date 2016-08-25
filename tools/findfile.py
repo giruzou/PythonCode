@@ -1,7 +1,6 @@
 import sys
 import os
-from os.path import join,relpath
-from glob import glob
+from textfinder import FileFinder
 
 def main():
     argv=sys.argv
@@ -16,13 +15,15 @@ def main():
         print("usage: python %s (folder's relative path) (extension))\n"% argv[0])
         quit()
 
-    extension='.txt'
+    extension='txt'
     if(argc==3):
-        condi=argv[2]
+        extension=argv[2]
+
     basedir=os.path.dirname(__file__)
     reldir=argv[1]
-    search_dir=join(basedir,reldir)
-    files=[relpath(x,search_dir) for x in glob(join(search_dir, '*'+extension))]
+    finder=FileFinder(reldir,extension)
+    files=finder.getfiles()
     print(files)
+
 if __name__ == '__main__':
     main()
