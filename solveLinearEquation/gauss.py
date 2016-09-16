@@ -1,4 +1,5 @@
 import numpy as np 
+import sympy as sy
 def solveeq_gauss(a,b,x):
     """
     solve equation ax=b using simple gauss method
@@ -14,6 +15,12 @@ def solveeq_gauss(a,b,x):
     #back forward
     for i in range(row)[::-1]:#reverse iteration
         x[i]=(a[i,col-1]-np.dot(a[i,i+1:row],x[i+1:row]))/a[i,i]
+        
+def confirm_numpy(a,b,x):
+    x=np.linalg.inv(a)@b
+
+def confirm_sympy(a,b,x):
+    x=a.solve(b)
 
 def main():
     a=np.matrix([[2,4,6],
@@ -22,6 +29,14 @@ def main():
     b=np.matrix([28,7,21],'float64').T
     x=np.empty(3)
     solveeq_gauss(a,b,x)
-    print(x)
+    print("gauss x:{}".format(x))
+    confirm_numpy(a,b,x)
+    print("numpy x{}".format(x))
+    a=sy.Matrix(a)
+    confirm_sympy(a,b,x)
+    print("sympy.solve x:{}".format(x))
+
+
+
 if __name__ == '__main__':
     main()
