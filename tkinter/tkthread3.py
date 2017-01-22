@@ -37,7 +37,7 @@ class Application:
         self.run_button.config(state=tk.NORMAL)
     def check_state(self):
         if self.state==Application.STATE_ASKING:
-            if tkmsg.askokcancel("Are you sure want to stop the application?","Yes No"):
+            if tkmsg.askokcancel("Remark","Are you sure want to stop the application?"):
                 self.state=Application.STATE_CANCELED
                 self.compute_thread.event_set()
                 self.join()
