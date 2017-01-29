@@ -6,7 +6,7 @@ import time
 
 HOST,PORT="localhost",9999
 data="".join(sys.argv[1:])
-data="HELLO"
+data="hello"
 
 class TimerInfo():
     def __init__(self,start,recv):
@@ -31,7 +31,7 @@ def send_messenger():
     received=sock.recv(1024)
     recv_time=time.time()-init_time
     sock.close()
-    print("sent:    %s"% data)
+    print("sent:    %s"% data+str(counter))
     print("received     %s"% received)
     time_info.append(TimerInfo(start_time,recv_time))
     time.sleep(0.5)

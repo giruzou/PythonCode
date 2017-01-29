@@ -24,8 +24,8 @@ class TCPHandler(SocketServer.BaseRequestHandler):
         #self.request is the TCP socket connected to the client
         start_time=time.time()-init_time
         self.data=self.request.recv(1024).strip()
-        print("%s wrote:"% self.client_address[0])
-        print self.data
+        print("%s client address :"% self.client_address[0])
+        print ("data=",self.data)
         time.sleep(1)
         #just send back the same data, but upper-cased
         send_time=time.time()-init_time
@@ -43,7 +43,7 @@ def main():
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print "cnt",handle_counter
+        print ("cnt",handle_counter)
 
     f=open("ser_res.txt",'w')
     for el in timer_info:
