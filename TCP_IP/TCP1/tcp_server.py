@@ -15,6 +15,7 @@ def main():
     while True:
       conn, address = sock.accept()
       with closing(conn):
+        print("address",address)
         msg = conn.recv(bufsize)
         print(msg)
         msg+="from serever"
