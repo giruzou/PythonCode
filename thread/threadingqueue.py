@@ -30,10 +30,7 @@ class JobManager(object):
                 for i in range(self.nthreads):
                     self.threads[i].join()
                 break
-            try:
-                que=self.result.get()
-            except queue.Empty:
-                break
+            que=self.result.get()
             yield(que)
         return None
 
