@@ -16,7 +16,7 @@ class JobManager(object):
 
     def init_threads(self):
         for i in range(self.nthreads):
-            t=threading.Thread(target=self.process_job,args=(i,),name=str(i))
+            t=threading.Thread(target=self.process_job,name=str(i))
             t.setDaemon(True)
             self.threads.append(t)
         self.threads.append(threading.Thread(target=self.insert_que_to_threads))
@@ -26,35 +26,29 @@ class JobManager(object):
 
     def pull(self):
         while True:
-            print('begin pull')
             if self.insert_done and self.result.empty():
-                print(self.result.empty(),'empty')
                 for i in range(self.nthreads):
                     self.threads[i].join()
                 break
             try:
                 que=self.result.get()
-                print('que=',que)
             except queue.Empty:
                 break
             yield(que)
-        print('break pull')
         return None
 
-    def process_job(self,th):
+    def process_job(self):
         while True:
             try:
                 i=self.request.get(timeout=1)
             except queue.Empty:
                 break
             self.result.put(i)
-        print('consume task',th,'done')
 
     def insert_que_to_threads(self):
         while not self.jobs.empty():
             job=self.jobs.get()
             self.request.put(job)
-        print('put job done')
         self.insert_done=True
         
 
@@ -65,9 +59,11 @@ def main():
         jobs.put(i)
     jm=JobManager(2,jobs)
     print('start')
+    get=[]
     for i in jm.pull():
         print('pull',i)
-    print("Hi")
+        get.append(i)
+    print(sorted(get))
 
 
 
