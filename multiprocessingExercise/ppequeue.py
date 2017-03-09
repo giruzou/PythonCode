@@ -8,7 +8,6 @@ class JobManager(object):
         self.jobs=jobs
         self.result=queue.Queue()
         self.threads=[]
-        self.insert_done=False
         self.process_task_done=False
         self.init_threads()
 
@@ -24,23 +23,20 @@ class JobManager(object):
                 job=self.jobs.get()
                 yield job
         executor=futures.ProcessPoolExecutor()
-        fs=[executor.submit(hello,job) for job in pull_job()]
-        self.insert_done=True
+        fs=[executor.submit(do_somethind,job) for job in pull_job()]
         for f in futures.as_completed(fs):
             self.result.put(f.result())
         self.process_task_done=True
 
     def pull(self):
         while True:
-            if self.process_task_done and self.insert_done and self.result.empty():
+            if self.process_task_done and self.result.empty():
                 break
             res=self.result.get()
             yield res
 
-
-
-def hello(i):
-    print('hello',i)
+def do_somethind(i):
+    print('do_somethind',i)
     time.sleep(2)
     return i
 
