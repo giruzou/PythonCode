@@ -2,14 +2,18 @@ import numpy as np
 import chainer
 from chainer import cuda
 import time 
-xp=cuda.cupy
+xp= cuda.cupy if cuda.available else np
 from matplotlib import pyplot as plt 
+from numba import jit
 
+
+@jit
 def do_something(n,mat):
 	for i in range(n):
 		mat=mat.dot(mat)
 		mat=mat-mat.dot(mat)
 
+@jit
 def cpucalc(n):
 	start=time.time()
 	mat=np.arange(n*n).reshape(n,n)
