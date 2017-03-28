@@ -10,7 +10,7 @@ def main():
     xs=np.arange(0,num_samples*plot_interval,plot_interval)
     f1,f2=3,4
     ys=np.sin(2*np.pi*f1*xs)+np.sin(2*np.pi*f2*xs)
-
+    ys/=np.max(np.abs(ys))
     fourier_value=np.fft.fft(ys)
     frq=np.fft.fftfreq(num_samples,d=plot_interval)
     amplitude_spectrum=np.abs(fourier_value)
