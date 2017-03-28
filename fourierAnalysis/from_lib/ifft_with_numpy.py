@@ -12,7 +12,7 @@ def plot_original(func):
     fig,ax=plt.subplots(figsize=(8,3))
     ax.plot(xs,func(xs))
     
-def apply_fft(func,plotxmax=10,restricted_func=None):
+def apply_fft(func,plotxmax=10,restricted_func=None,pass_filter='low'):
     ys=func(xs)
     fourier_value=np.fft.fft(ys)
     frq=np.fft.fftfreq(num_samples,d=plot_interval)
@@ -35,7 +35,13 @@ def apply_fft(func,plotxmax=10,restricted_func=None):
     
     #restrict frequency
     kill_idx=np.argmin(np.abs(frq-kill_frq))
-    fourier_value[kill_idx:-kill_idx]=0
+    if pass_filter=='low':
+        fourier_value[kill_idx:-kill_idx]=0
+    elif pass_filter=='high':
+        fourier_value[:kill_idx]=0
+        fourier_value[-kill_idx:]=0
+    else:
+        raise Exception("pass_filter must be 'low' or 'high'")
     amplitude_spectrum=np.abs(fourier_value)
     ax4=fig.add_subplot(514)
     ax4.set_title('restricted (< {} ) amplitude_spectrum'.format(kill_frq))
@@ -48,14 +54,18 @@ def apply_fft(func,plotxmax=10,restricted_func=None):
     ax5.plot(xs,inv_fft.real,'g')
     
     if not restricted_func == None:
-        ax5.plot(xs,restricted_func(xs),'rx')
+        ax5.plot(xs,restricted_func(xs),'r')
     plt.show()
 
 def main():
     fs=[1,2,3,4,5,6,7,8,9]
-    rest=list(filter(lambda f:f<kill_frq, fs))
+    pass_filter='high'
+    if pass_filter=='low':
+        rest=list(filter(lambda f:f<kill_frq, fs))
+    elif pass_filter=='high':
+        rest=list(filter(lambda f:f>kill_frq, fs))
     func=      lambda x:sum([np.cos(2*np.pi*f*x) for f in fs])
     restricted=lambda x:sum([np.cos(2*np.pi*f*x) for f in rest])
-    apply_fft(func,restricted_func=restricted)
+    apply_fft(func,restricted_func=restricted,pass_filter=pass_filter)
 if __name__ == '__main__':
     main()
