@@ -1,3 +1,0 @@
-import easyForm
-
-easyForm.main()
