@@ -21,9 +21,11 @@ def main():
     ns=[n for n in range(xmax)]
     seq=[function(n) for n in ns]
 
-    fig,ax=plt.subplots()
+    fig,ax=plt.subplots(figsize=(12,8))
     ax.set_title(r"An Introduction to $\epsilon$-$N$ method")
-    ax.set_xlabel("n")
+    ax.set_xlabel(r"$n$", fontsize=20)
+    ax.set_ylabel(r"$a_n$", fontsize=20)
+
     ax.plot(xs,function(xs),'--',markersize=2)
     ax.plot(ns,seq,'bo',label=r'$a_n=\sin(n) \exp(-{}n)$'.format(COEFF),markersize=3)
 
@@ -42,7 +44,7 @@ def main():
                     xytext=(+10,-30),textcoords='offset points')
 
     N=np.log(EPSILON)/-COEFF
-
+    #to show epsilon bound
     ax.plot([N,xmax],[EPSILON,EPSILON],linewidth=0.25,linestyle="--",color='r')
     ax.annotate(r'$\epsilon=$ %f'% EPSILON ,xy=((N+100)/2.0,EPSILON),xycoords='data',
                     arrowprops=dict(arrowstyle="->"),
