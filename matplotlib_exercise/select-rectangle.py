@@ -1,4 +1,4 @@
-mfrom __future__ import print_function
+from __future__ import print_function
 """
 Do a mouseclick somewhere, move the mouse to some destination, release
 the button.  This class gives click- and release-events and also draws
@@ -49,6 +49,6 @@ toggle_selector.RS = RectangleSelector(current_ax, line_select_callback,
                                        spancoords='pixels',
                                        interactive=True)
 plt.connect('key_press_event', toggle_selector)
-cursor = Cursor(ax, useblit=True, color='red', linewidth=1)
+cursor = ax.Cursor(ax, useblit=True, color='red', linewidth=1)
 
 plt.show()
