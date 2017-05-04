@@ -1,19 +1,27 @@
 import numpy as np 
 from matplotlib import pyplot as plt
+from scipy.interpolate import interp1d
 
 class PointsBrowser():
-    def __init__(self,fig,ax,xs,ys,plotted):
+    def __init__(self,fig,ax):
+        self.num_ctrl_pt=9
+        self.xs=np.linspace(0,255,self.num_ctrl_pt)
+        self.ys=np.linspace(0,255,self.num_ctrl_pt)
+        ax.plot(np.linspace(0,255,100),np.linspace(0,255,100),'--',color='gray')
+
+
         self.lastind=0
-        self.selected, =ax.plot([xs[0]],[ys[0]],'o', ms=12,alpha=0.4,
+        self.selected, =ax.plot([self.xs[0]],[self.ys[0]],'o', ms=12,alpha=0.4,
                             color='red', visible=False)
-        self.moved, =ax.plot([xs[0]],[ys[0]],'o', ms=12,alpha=0.4,
+        self.moved, =ax.plot([self.xs[0]],[self.ys[0]],'o', ms=12,alpha=0.4,
                             color='green', visible=False)
+
+        self.plotted, = ax.plot(self.xs[1:len(self.xs)-1],self.ys[1:len(self.ys)-1],'o',picker=5)
+        self.curve, =ax.plot([],[],'-',visible=False)
+
         self.movedxy=None
         self.fig=fig
         self.ax=ax
-        self.xs=xs
-        self.ys=ys
-        self.plotted=plotted
 
         self.pressed_loc=None
 
@@ -22,9 +30,10 @@ class PointsBrowser():
             return True
 
         N=len(event.ind)
-        print(event.ind)
-        print(N)
         if not N:
+            return True
+
+        if 0 in event.ind or self.num_ctrl_pt-1 in event.ind:
             return True
 
         x=event.mouseevent.xdata
@@ -37,7 +46,7 @@ class PointsBrowser():
         self.pressed_loc = x,y
 
         self.lastind=dataind
-        self.plot_last_ind_point()
+        self.update()
 
 
     def on_key_pressed(self,event):
@@ -54,15 +63,16 @@ class PointsBrowser():
         print(event.key)
         self.lastind+=inc
         self.lastind=self.lastind % len(self.xs)
-        self.plot_last_ind_point()
+        self.update()
 
-    def plot_last_ind_point(self):
+    def update(self):
         if self.lastind is None:
             return 
 
         dataind=self.lastind
         self.selected.set_visible(True)
         self.selected.set_data(self.xs[dataind],self.ys[dataind])
+        self.draw_interpolation()
         self.fig.canvas.draw()
 
     def on_motion(self,event):
@@ -98,21 +108,27 @@ class PointsBrowser():
         self.ys[self.lastind]=self.movedxy[1]
 
         self.plotted.set_data(self.xs,self.ys)
+
         self.fig.canvas.draw()
-        self.plot_last_ind_point()
+        self.update()
         self.movedxy=None
+
+    def draw_interpolation(self):
+        approx_func=interp1d(self.xs,self.ys,kind='cubic')
+        xs4func=np.linspace(np.min(self.xs),np.max(self.xs),num=1000)
+        self.curve.set_data(xs4func,approx_func(xs4func))
+        self.curve.set_visible(True)
+
 
 
 
 def main():
-    X=np.random.rand(7,200)
-    xs=np.mean(X,axis=1)
-    ys=np.std(X,axis=1)
 
     fig, ax=plt.subplots()
-    plotted, =ax.plot(xs,ys,'o',picker=5)
+    ax.set_xlim([0,255])
+    ax.set_ylim([0,255])
 
-    browser=PointsBrowser(fig,ax,xs,ys,plotted)
+    browser=PointsBrowser(fig,ax)
 
     fig.canvas.mpl_connect('pick_event',browser.onpick)
     fig.canvas.mpl_connect('key_press_event',browser.on_key_pressed)
