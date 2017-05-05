@@ -114,7 +114,7 @@ class PointsBrowser():
         self.movedxy=None
 
     def draw_interpolation(self):
-        approx_func=interp1d(self.xs,self.ys,kind='cubic')
+        approx_func=interp1d(self.xs,self.ys)
         xs4func=np.linspace(np.min(self.xs),np.max(self.xs),num=1000)
         self.curve.set_data(xs4func,approx_func(xs4func))
         self.curve.set_visible(True)
@@ -123,8 +123,7 @@ class PointsBrowser():
 
 
 def main():
-
-    fig, ax=plt.subplots()
+    fig, ax=plt.subplots(figsize=(5,5))
     ax.set_xlim([0,255])
     ax.set_ylim([0,255])
 
