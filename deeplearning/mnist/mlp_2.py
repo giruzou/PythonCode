@@ -1,12 +1,16 @@
-
+"""
+Classify handwritten images its data are from MNIST
+main reference
+https://github.com/oreilly-japan/deep-learning-from-scratch
+"""
 __author__="SatoshiTerasaki<terasakisatoshi.math@gmai.com"
 __date__='2017/05/05'
+
+
 
 import time
 from matplotlib import pyplot as plt
 import numpy as np 
-import os
-from os.path import join, basename, dirname
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
@@ -21,7 +25,7 @@ def sigmoid(x):
 def deriv_sigmoid(x):
     return sigmoid(x) * (1-sigmoid(x))
 
-def softmax(xs):
+def softmax(x):
     """
     calc softmax function
     note that np.sum(arr,axis=1,keepdims=True) behaves as follow:
@@ -35,7 +39,7 @@ def softmax(xs):
               [22],
               [38])
     """
-    exp_x=np.exp(xs)
+    exp_x=np.exp(x)
     if exp_x.ndim<=1:
         return exp_x/np.sum(exp_x,keepdims=True)
     else:
@@ -158,7 +162,7 @@ class MultiPerceptron(object):
         ys=self.predict(xs)
         return cross_entropy_error(ys,ts)
 
-    def calc_naive_grads(self,xs,ts):
+    def calc_grads_with_naive(self,xs,ts):
         loss_fun = lambda W : self.loss(xs,ts)
 
         grads={}
@@ -174,6 +178,13 @@ class MultiPerceptron(object):
         return grads
 
     def calc_backprop_grads(self, x, t):
+        """
+        calc gradients with back-propagation with MSE
+        [in] x: train image data
+             t: one hot vector corresponds the answer os x
+        [out]
+             pertial derivatives of MSE
+        """
         W1, W2 = self.parameters['W1'], self.parameters['W2']
         b1, b2 = self.parameters['b1'], self.parameters['b2']
         grads = {}
@@ -219,25 +230,26 @@ def main():
     loss_list=[]
     accuracy_list=[]
 
-    for iteration in range(ITERATIONS):
+    for iteration in range(1,ITERATIONS):
+        print("----- %d th -----" % iteration)
         started=time.time()
         sampled_indices=np.random.choice(len(train_X),MINI_BATCH_SIZE)
         batch_train_X=train_X[sampled_indices]
         batch_train_y=train_y[sampled_indices]
         batch_train_y=one_hot_vector(batch_train_y)
-        grads=network.calc_naive_grads(batch_train_X,batch_train_y)
-        #grads=network.calc_backprop_grads(batch_train_X,batch_train_y)
+        grads=network.calc_grads_with_naive(batch_train_X,batch_train_y)
+
         #update
         for param in ['W1','W2','b1','b2']:
             network.parameters[param]-= LEARNING_RATE* grads[param]
 
         loss=network.loss(batch_train_X,batch_train_y)
-        print('loss',loss)
         accuracy=network.evaluate(valid_X,one_hot_vector(valid_y))
-        print('accuracy',accuracy)
         loss_list.append(loss)
         accuracy_list.append(accuracy)
         end=time.time()
+        print('loss',loss)
+        print('accuracy',100*accuracy,'[%]')
         print("elapsed time per iteration ",end-started," [sec]")
 
     plt.plot(loss_list)
