@@ -95,14 +95,13 @@ def get_mnist_data(data_home=None):
     mnist=fetch_mldata('MNIST original')
     return mnist
 
-def divide_mnist_data(mnist=None):
+def divide_mnist_data():
     """
     load mnist dataset
     input:None
     output:split these data into train valid and test data.
     """
-    if not mnist:
-        mnist=get_mnist_data(dirname(__file__))
+    mnist=get_mnist_data()
 
     mnist_X,mnist_y=shuffle(mnist.data,mnist.target, random_state=42)
     #normalize
@@ -179,7 +178,6 @@ class MultiPerceptron(object):
 
     def calc_backprop_grads(self, x, t):
         """
-        calc gradients with back-propagation with MSE
         [in] x: train image data
              t: one hot vector corresponds the answer os x
         [out]
@@ -192,19 +190,55 @@ class MultiPerceptron(object):
         batch_num = x.shape[0]
         
         # forward
-        a1 = np.dot(x, W1) + b1
-        z1 = sigmoid(a1)
-        a2 = np.dot(z1, W2) + b2
-        y = softmax(a2)
+        u1 = np.dot(x, W1) + b1
+        z1 = sigmoid(u1)
+        u2 = np.dot(z1, W2) + b2
+        y = softmax(u2)
         
         # backward
-        dy = (y - t) / batch_num
-        grads['W2'] = np.dot(z1.T, dy)
-        grads['b2'] = np.sum(dy, axis=0)
+        delta_output = (y - t) / batch_num
+        grads['W2'] = np.dot(z1.T, delta_output)
+        grads['b2'] = np.sum(delta_output, axis=0)
         
-        da1 = np.dot(dy, W2.T)
-        dz1 = deriv_sigmoid(a1) * da1
+        du1 = np.dot(delta_output, W2.T)
+        dz1 = deriv_sigmoid(u1) * du1
         grads['W1'] = np.dot(x.T, dz1)
+        grads['b1'] = np.sum(dz1, axis=0)
+
+        return grads
+
+    def back_propagation(self, xs, ts):
+        """
+        [in] x: train image data
+             t: one hot vector corresponds the answer os x
+        [out]
+             pertial derivatives of MSE
+        """
+        W1, W2 = self.parameters['W1'], self.parameters['W2']
+        b1, b2 = self.parameters['b1'], self.parameters['b2']
+        grads = {}
+        
+        batch_num = xs.shape[0]
+        
+        # forward
+        z0=xs
+        u1=np.matmul(z0,W1)+b1
+        z1=sigmoid(u1)
+        u2=np.matmul(z1,W2)+b2
+        z2=sigmoid(u2)
+        ys=softmax(z2)
+        # backward
+        delta_output = (ys - ts) / batch_num
+        print('delta_output',delta_output.shape)
+        print('z1.T',z1.T.shape)
+        grads['W2'] = np.dot(z1.T, delta_output)
+        print('grads[W2]',grads['W2'].shape)
+        grads['b2'] = np.sum(delta_output, axis=0)
+        print('grads[b2]',grads['b2'].shape)
+
+        du1 = np.dot(delta_output, W2.T)
+        dz1 = deriv_sigmoid(u1) * du1
+        grads['W1'] = np.dot(xs.T, dz1)
         grads['b1'] = np.sum(dz1, axis=0)
 
         return grads
@@ -221,9 +255,8 @@ HIDDEN_SIZE=30
 
 def main():
     #get data
-    data=dirname(__file__)
     print(">>>get mnist data<<<")
-    mnist=get_mnist_data(data)
+    mnist=get_mnist_data()
     train_X,valid_X,test_X,train_y,valid_y,test_y=divide_mnist_data()
     network=MultiPerceptron(hidden_size=HIDDEN_SIZE)
 
@@ -237,7 +270,7 @@ def main():
         batch_train_X=train_X[sampled_indices]
         batch_train_y=train_y[sampled_indices]
         batch_train_y=one_hot_vector(batch_train_y)
-        grads=network.calc_grads_with_naive(batch_train_X,batch_train_y)
+        grads=network.back_propagation(batch_train_X,batch_train_y)
 
         #update
         for param in ['W1','W2','b1','b2']:
