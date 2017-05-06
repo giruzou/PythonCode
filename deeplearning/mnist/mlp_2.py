@@ -230,16 +230,14 @@ class MultiPerceptron(object):
         # backward
         delta_output = (ys - ts) / batch_num
         print('delta_output',delta_output.shape)
-        print('z1.T',z1.T.shape)
-        grads['W2'] = np.dot(z1.T, delta_output)
-        print('grads[W2]',grads['W2'].shape)
-        grads['b2'] = np.sum(delta_output, axis=0)
-        print('grads[b2]',grads['b2'].shape)
 
-        du1 = np.dot(delta_output, W2.T)
-        dz1 = deriv_sigmoid(u1) * du1
-        grads['W1'] = np.dot(xs.T, dz1)
-        grads['b1'] = np.sum(dz1, axis=0)
+        grads['W2'] = np.dot(z1.T, delta_output)
+        grads['b2'] = np.sum(delta_output, axis=0)
+        #take Hadamard product for u1 and du2
+        delta_1 = deriv_sigmoid(u1) * np.dot(delta_output, W2.T)
+        
+        grads['W1'] = np.dot(z0.T, delta_1)
+        grads['b1'] = np.sum(delta_1, axis=0)
 
         return grads
 
@@ -248,9 +246,9 @@ def one_hot_vector(ts):
     label_list=np.identity(10)
     return np.array([label_list[t] for t in list(map(int,ts))])
 
-ITERATIONS=500
-MINI_BATCH_SIZE=100
-LEARNING_RATE=0.5
+ITERATIONS=5000
+MINI_BATCH_SIZE=1000
+LEARNING_RATE=0.1
 HIDDEN_SIZE=30
 
 def main():
@@ -262,25 +260,27 @@ def main():
 
     loss_list=[]
     accuracy_list=[]
-
+    #start training
     for iteration in range(1,ITERATIONS):
         print("----- %d th -----" % iteration)
+        
         started=time.time()
+        
         sampled_indices=np.random.choice(len(train_X),MINI_BATCH_SIZE)
         batch_train_X=train_X[sampled_indices]
         batch_train_y=train_y[sampled_indices]
         batch_train_y=one_hot_vector(batch_train_y)
         grads=network.back_propagation(batch_train_X,batch_train_y)
-
         #update
         for param in ['W1','W2','b1','b2']:
             network.parameters[param]-= LEARNING_RATE* grads[param]
+
+        end=time.time()
 
         loss=network.loss(batch_train_X,batch_train_y)
         accuracy=network.evaluate(valid_X,one_hot_vector(valid_y))
         loss_list.append(loss)
         accuracy_list.append(accuracy)
-        end=time.time()
         print('loss',loss)
         print('accuracy',100*accuracy,'[%]')
         print("elapsed time per iteration ",end-started," [sec]")
