@@ -2,6 +2,7 @@
 __author__="SatoshiTerasaki<terasakisatoshi.math@gmai.com"
 __date__='2017/05/05'
 
+import time
 from matplotlib import pyplot as plt
 import numpy as np 
 import os
@@ -10,6 +11,8 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 from sklearn.datasets import fetch_mldata
+
+from numba import jit
 
 #functions
 def sigmoid(x):
@@ -159,9 +162,13 @@ class MultiPerceptron(object):
         loss_fun = lambda W : self.loss(xs,ts)
 
         grads={}
+        print("calcw1")
         grads['W1']=numerical_gradient(loss_fun,self.parameters['W1'])
+        print("calcb1")
         grads['b1']=numerical_gradient(loss_fun,self.parameters['b1'])
+        print("calcw2")
         grads['W2']=numerical_gradient(loss_fun,self.parameters['W2'])
+        print("calcb2")
         grads['b2']=numerical_gradient(loss_fun,self.parameters['b2'])
 
         return grads
@@ -197,20 +204,9 @@ def one_hot_vector(ts):
     return np.array([label_list[t] for t in list(map(int,ts))])
 
 ITERATIONS=500
-MINI_BATCH_SIZE=1000
-LEARNING_RATE=0.1
-HIDDEN_SIZE=100
-
-def _main():
-    #get data
-    data=dirname(__file__)
-    mnist=get_mnist_data(data)
-    train_X,valid_X,test_X,train_y,valid_y,test_y=divide_mnist_data()
-    
-    test=test_X[1:10]
-    result=train_y[1:10]
-    hidden_size=100
-    network=MultiPerceptron(hidden_size=40)
+MINI_BATCH_SIZE=100
+LEARNING_RATE=0.5
+HIDDEN_SIZE=30
 
 def main():
     #get data
@@ -224,14 +220,16 @@ def main():
     accuracy_list=[]
 
     for iteration in range(ITERATIONS):
+        started=time.time()
         sampled_indices=np.random.choice(len(train_X),MINI_BATCH_SIZE)
         batch_train_X=train_X[sampled_indices]
         batch_train_y=train_y[sampled_indices]
         batch_train_y=one_hot_vector(batch_train_y)
-        grads=network.calc_backprop_grads(batch_train_X,batch_train_y)
+        grads=network.calc_naive_grads(batch_train_X,batch_train_y)
+        #grads=network.calc_backprop_grads(batch_train_X,batch_train_y)
         #update
         for param in ['W1','W2','b1','b2']:
-            network.parameters[param]-= (LEARNING_RATE+np.exp(-0.05*iteration)) * grads[param]
+            network.parameters[param]-= LEARNING_RATE* grads[param]
 
         loss=network.loss(batch_train_X,batch_train_y)
         print('loss',loss)
@@ -239,6 +237,8 @@ def main():
         print('accuracy',accuracy)
         loss_list.append(loss)
         accuracy_list.append(accuracy)
+        end=time.time()
+        print("elapsed time per iteration ",end-started," [sec]")
 
     plt.plot(loss_list)
     plt.plot(accuracy_list)
