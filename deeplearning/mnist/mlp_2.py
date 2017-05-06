@@ -108,10 +108,7 @@ def divide_mnist_data(mnist=None):
     return train_X,valid_X,test_X,train_y,valid_y,test_y
 
 class MultiPerceptron(object):
-    def __init__(self):
-        in_size=28*28
-        hidden_size=40
-        out_size=10
+    def __init__(self,in_size=28*28,hidden_size=100,out_size=10):
         self.parameters={}
         # Layer1 weights
         W1 = np.random.uniform(low=-0.08, high=0.08, size=(in_size, hidden_size)).astype('float32')
@@ -165,37 +162,29 @@ class MultiPerceptron(object):
         return grads
 
         
-def convert_teach_vector(ts):
+def one_hot_vector(ts):
     label_list=np.identity(10)
     return [label_list[t] for t in list(map(int,ts))]
 
-def _main():
-    network=MultiPerceptron()
-    #show init parameters
-    #network()
-    #get data
-    mnist=get_mnist_data()
-    train_X,valid_X,test_X,train_y,valid_y,test_y=divide_mnist_data()
-    result=train_y[1:10]
-
-    print(result)
-    print(convert_teach_vector(result))
+ITERATIONS=10
+MINI_BATCH_SIZE=20
+LEARNING_RATE=0.1
 
 def main():
-    network=MultiPerceptron()
-    #show init parameters
-    #network()
     #get data
     mnist=get_mnist_data()
     train_X,valid_X,test_X,train_y,valid_y,test_y=divide_mnist_data()
-
+    
     test=test_X[1:10]
     result=train_y[1:10]
+    hidden_size=40
+    network=MultiPerceptron(hidden_size=40)
+    #show init parameters
+    #network()
 
-    print(result)
-    ts=convert_teach_vector(result)
-
-    print(network.evaluate(test,ts))
+    for _ in random(ITERATIONS):
+        sampled_indices=np.random.choice(len(train_X),MINI_BATCH_SIZE)
+        batch_train_X
 
 if __name__ == '__main__':
     main()
