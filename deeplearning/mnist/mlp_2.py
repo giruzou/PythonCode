@@ -2,6 +2,7 @@
 __author__="SatoshiTerasaki<terasakisatoshi.math@gmai.com"
 __date__='2017/05/05'
 
+from matplotlib import pyplot as plt
 import numpy as np 
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
@@ -181,10 +182,20 @@ def main():
     network=MultiPerceptron(hidden_size=40)
     #show init parameters
     #network()
-
+    loss_list=[]
     for _ in random(ITERATIONS):
         sampled_indices=np.random.choice(len(train_X),MINI_BATCH_SIZE)
-        batch_train_X
+        batch_train_X=train_X[sampled_indices]
+        batch_train_y=train_y[sampled_indices]
+
+        grads=network.calc_grads(batch_train_X,batch_train_y)
+        for param in ['W1','W2','b1','b2']:
+            self.parameters[param]-=grads[param]
+        loss=network.loss(batch_train_X,batch_train_y)
+        print(loss)
+        loss_list.append(loss)
+
+    plt.plot(loss_list)
 
 if __name__ == '__main__':
     main()
