@@ -4,6 +4,8 @@ __date__='2017/05/05'
 
 from matplotlib import pyplot as plt
 import numpy as np 
+import os
+from os.path import join, basename, dirname
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
@@ -78,7 +80,7 @@ def numerical_gradient(f, x):
 
 
 #create dataset 
-def get_mnist_data():
+def get_mnist_data(data_home=None):
     """
     load data on your directry ~/scikit_learn_data/mldata/
     if data does'nt exist, it downloads the data from site.
@@ -93,7 +95,7 @@ def divide_mnist_data(mnist=None):
     output:split these data into train valid and test data.
     """
     if not mnist:
-        mnist=get_mnist_data()
+        mnist=get_mnist_data(dirname(__file__))
 
     mnist_X,mnist_y=shuffle(mnist.data,mnist.target, random_state=42)
     #normalize
@@ -145,13 +147,15 @@ class MultiPerceptron(object):
 
     def evaluate(self,xs,ts):
         ys=self.predict(xs)
-        print(ys-ts)
+        labels=np.argmax(ys,axis=1)
+        ts=np.argmax(ts,axis=1)
+        return np.sum(labels==ts)/float(ys.shape[0])
 
     def loss(self,xs,ts):
         ys=self.predict(xs)
         return cross_entropy_error(ys,ts)
 
-    def calc_grads(self,xs,ts):
+    def calc_naive_grads(self,xs,ts):
         loss_fun = lambda W : self.loss(xs,ts)
 
         grads={}
@@ -162,40 +166,83 @@ class MultiPerceptron(object):
 
         return grads
 
+    def calc_backprop_grads(self, x, t):
+        W1, W2 = self.parameters['W1'], self.parameters['W2']
+        b1, b2 = self.parameters['b1'], self.parameters['b2']
+        grads = {}
+        
+        batch_num = x.shape[0]
+        
+        # forward
+        a1 = np.dot(x, W1) + b1
+        z1 = sigmoid(a1)
+        a2 = np.dot(z1, W2) + b2
+        y = softmax(a2)
+        
+        # backward
+        dy = (y - t) / batch_num
+        grads['W2'] = np.dot(z1.T, dy)
+        grads['b2'] = np.sum(dy, axis=0)
+        
+        da1 = np.dot(dy, W2.T)
+        dz1 = deriv_sigmoid(a1) * da1
+        grads['W1'] = np.dot(x.T, dz1)
+        grads['b1'] = np.sum(dz1, axis=0)
+
+        return grads
+
         
 def one_hot_vector(ts):
     label_list=np.identity(10)
-    return [label_list[t] for t in list(map(int,ts))]
+    return np.array([label_list[t] for t in list(map(int,ts))])
 
-ITERATIONS=10
-MINI_BATCH_SIZE=20
+ITERATIONS=500
+MINI_BATCH_SIZE=1000
 LEARNING_RATE=0.1
+HIDDEN_SIZE=100
 
-def main():
+def _main():
     #get data
-    mnist=get_mnist_data()
+    data=dirname(__file__)
+    mnist=get_mnist_data(data)
     train_X,valid_X,test_X,train_y,valid_y,test_y=divide_mnist_data()
     
     test=test_X[1:10]
     result=train_y[1:10]
-    hidden_size=40
+    hidden_size=100
     network=MultiPerceptron(hidden_size=40)
-    #show init parameters
-    #network()
+
+def main():
+    #get data
+    data=dirname(__file__)
+    print(">>>get mnist data<<<")
+    mnist=get_mnist_data(data)
+    train_X,valid_X,test_X,train_y,valid_y,test_y=divide_mnist_data()
+    network=MultiPerceptron(hidden_size=HIDDEN_SIZE)
+
     loss_list=[]
-    for _ in random(ITERATIONS):
+    accuracy_list=[]
+
+    for iteration in range(ITERATIONS):
         sampled_indices=np.random.choice(len(train_X),MINI_BATCH_SIZE)
         batch_train_X=train_X[sampled_indices]
         batch_train_y=train_y[sampled_indices]
-
-        grads=network.calc_grads(batch_train_X,batch_train_y)
+        batch_train_y=one_hot_vector(batch_train_y)
+        grads=network.calc_backprop_grads(batch_train_X,batch_train_y)
+        #update
         for param in ['W1','W2','b1','b2']:
-            self.parameters[param]-=grads[param]
+            network.parameters[param]-= (LEARNING_RATE+np.exp(-0.05*iteration)) * grads[param]
+
         loss=network.loss(batch_train_X,batch_train_y)
-        print(loss)
+        print('loss',loss)
+        accuracy=network.evaluate(valid_X,one_hot_vector(valid_y))
+        print('accuracy',accuracy)
         loss_list.append(loss)
+        accuracy_list.append(accuracy)
 
     plt.plot(loss_list)
+    plt.plot(accuracy_list)
+    plt.show()
 
 if __name__ == '__main__':
     main()
