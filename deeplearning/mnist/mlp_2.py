@@ -147,8 +147,7 @@ class MultiPerceptron(object):
         u1=np.matmul(z0,W1)+b1
         z1=sigmoid(u1)
         u2=np.matmul(z1,W2)+b2
-        z2=sigmoid(u2)
-        ys=softmax(z2)
+        ys=softmax(u2)
         return ys
 
     def evaluate(self,xs,ts):
@@ -165,45 +164,10 @@ class MultiPerceptron(object):
         loss_fun = lambda W : self.loss(xs,ts)
 
         grads={}
-        print("calcw1")
         grads['W1']=numerical_gradient(loss_fun,self.parameters['W1'])
-        print("calcb1")
         grads['b1']=numerical_gradient(loss_fun,self.parameters['b1'])
-        print("calcw2")
         grads['W2']=numerical_gradient(loss_fun,self.parameters['W2'])
-        print("calcb2")
         grads['b2']=numerical_gradient(loss_fun,self.parameters['b2'])
-
-        return grads
-
-    def calc_backprop_grads(self, x, t):
-        """
-        [in] x: train image data
-             t: one hot vector corresponds the answer os x
-        [out]
-             pertial derivatives of MSE
-        """
-        W1, W2 = self.parameters['W1'], self.parameters['W2']
-        b1, b2 = self.parameters['b1'], self.parameters['b2']
-        grads = {}
-        
-        batch_num = x.shape[0]
-        
-        # forward
-        u1 = np.dot(x, W1) + b1
-        z1 = sigmoid(u1)
-        u2 = np.dot(z1, W2) + b2
-        y = softmax(u2)
-        
-        # backward
-        delta_output = (y - t) / batch_num
-        grads['W2'] = np.dot(z1.T, delta_output)
-        grads['b2'] = np.sum(delta_output, axis=0)
-        
-        du1 = np.dot(delta_output, W2.T)
-        dz1 = deriv_sigmoid(u1) * du1
-        grads['W1'] = np.dot(x.T, dz1)
-        grads['b1'] = np.sum(dz1, axis=0)
 
         return grads
 
@@ -225,17 +189,16 @@ class MultiPerceptron(object):
         u1=np.matmul(z0,W1)+b1
         z1=sigmoid(u1)
         u2=np.matmul(z1,W2)+b2
-        z2=sigmoid(u2)
-        ys=softmax(z2)
+        ys=softmax(u2)
         # backward
+        #calc output layer error
         delta_output = (ys - ts) / batch_num
-        print('delta_output',delta_output.shape)
-
+        #backward to hidden layer
         grads['W2'] = np.dot(z1.T, delta_output)
         grads['b2'] = np.sum(delta_output, axis=0)
         #take Hadamard product for u1 and du2
         delta_1 = deriv_sigmoid(u1) * np.dot(delta_output, W2.T)
-        
+        #backward to hidden layer
         grads['W1'] = np.dot(z0.T, delta_1)
         grads['b1'] = np.sum(delta_1, axis=0)
 
@@ -249,7 +212,7 @@ def one_hot_vector(ts):
 ITERATIONS=5000
 MINI_BATCH_SIZE=1000
 LEARNING_RATE=0.1
-HIDDEN_SIZE=30
+HIDDEN_SIZE=100
 
 def main():
     #get data
