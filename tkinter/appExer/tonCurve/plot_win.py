@@ -26,8 +26,9 @@ class MatplotlibWindow2(object):
 class ToneCurveViewer(object):
     def __init__(self,root):
         self.root=root
-        fig=Figure(figsize=(6,6))
-        self.ax=fig.add_subplot(111)
+        fig,ax=plt.subplots(figsize=(6,6))
+        #self.ax=fig.add_subplot(111)
+        self.ax=ax
         self.ax.set_xlim([0,255])
         self.ax.set_ylim([0,255])
         browser=CurveBrowser(fig,self.ax)
@@ -38,9 +39,9 @@ class ToneCurveViewer(object):
                 
         canvas.mpl_connect('pick_event',browser.onpick)
         canvas.mpl_connect('motion_notify_event',browser.on_motion)
-        #both bind is very important but I do not know why
+        #both bind is very important for release event but I do not know why
         canvas._tkcanvas.bind('button_release_event',browser.on_release)
-        self.ax.figure.canvas.mpl_connect('button_release_event', browser.on_release)
+        canvas.mpl_connect('button_release_event', browser.on_release)
 
         toolbar = NavigationToolbar2TkAgg(canvas, plot_frame)
         toolbar.update()
