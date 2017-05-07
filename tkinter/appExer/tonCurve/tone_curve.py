@@ -36,9 +36,6 @@ class CurveBrowser():
         if not N:
             return True
 
-        if 0 in event.ind or self.num_ctrl_pt-1 in event.ind:
-            return True
-
         x=event.mouseevent.xdata
         y=event.mouseevent.ydata
 
