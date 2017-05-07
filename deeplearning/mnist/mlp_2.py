@@ -173,6 +173,7 @@ class MultiPerceptron(object):
 
     def back_propagation(self, xs, ts):
         """
+        calc back propagation of cross_entropy
         [in] x: train image data
              t: one hot vector corresponds the answer os x
         [out]
@@ -196,7 +197,7 @@ class MultiPerceptron(object):
         #backward to hidden layer
         grads['W2'] = np.dot(z1.T, delta_output)
         grads['b2'] = np.sum(delta_output, axis=0)
-        #take Hadamard product for u1 and du2
+        #take Hadamard product
         delta_1 = deriv_sigmoid(u1) * np.dot(delta_output, W2.T)
         #backward to hidden layer
         grads['W1'] = np.dot(z0.T, delta_1)
