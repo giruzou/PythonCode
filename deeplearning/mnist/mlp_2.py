@@ -1,12 +1,22 @@
-
+"""
+Classify handwritten images its data are from MNIST
+main reference
+https://github.com/oreilly-japan/deep-learning-from-scratch
+"""
 __author__="SatoshiTerasaki<terasakisatoshi.math@gmai.com"
 __date__='2017/05/05'
 
+
+
+import time
+from matplotlib import pyplot as plt
 import numpy as np 
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import f1_score
 from sklearn.datasets import fetch_mldata
+
+from numba import jit
 
 #functions
 def sigmoid(x):
@@ -15,7 +25,7 @@ def sigmoid(x):
 def deriv_sigmoid(x):
     return sigmoid(x) * (1-sigmoid(x))
 
-def softmax(xs):
+def softmax(x):
     """
     calc softmax function
     note that np.sum(arr,axis=1,keepdims=True) behaves as follow:
@@ -29,7 +39,7 @@ def softmax(xs):
               [22],
               [38])
     """
-    exp_x=np.exp(xs)
+    exp_x=np.exp(x)
     if exp_x.ndim<=1:
         return exp_x/np.sum(exp_x,keepdims=True)
     else:
@@ -77,7 +87,7 @@ def numerical_gradient(f, x):
 
 
 #create dataset 
-def get_mnist_data():
+def get_mnist_data(data_home=None):
     """
     load data on your directry ~/scikit_learn_data/mldata/
     if data does'nt exist, it downloads the data from site.
@@ -85,14 +95,13 @@ def get_mnist_data():
     mnist=fetch_mldata('MNIST original')
     return mnist
 
-def divide_mnist_data(mnist=None):
+def divide_mnist_data():
     """
     load mnist dataset
     input:None
     output:split these data into train valid and test data.
     """
-    if not mnist:
-        mnist=get_mnist_data()
+    mnist=get_mnist_data()
 
     mnist_X,mnist_y=shuffle(mnist.data,mnist.target, random_state=42)
     #normalize
@@ -138,19 +147,20 @@ class MultiPerceptron(object):
         u1=np.matmul(z0,W1)+b1
         z1=sigmoid(u1)
         u2=np.matmul(z1,W2)+b2
-        z2=sigmoid(u2)
-        ys=softmax(z2)
+        ys=softmax(u2)
         return ys
 
     def evaluate(self,xs,ts):
         ys=self.predict(xs)
-        print(ys-ts)
+        labels=np.argmax(ys,axis=1)
+        ts=np.argmax(ts,axis=1)
+        return np.sum(labels==ts)/float(ys.shape[0])
 
     def loss(self,xs,ts):
         ys=self.predict(xs)
         return cross_entropy_error(ys,ts)
 
-    def calc_grads(self,xs,ts):
+    def calc_grads_with_naive(self,xs,ts):
         loss_fun = lambda W : self.loss(xs,ts)
 
         grads={}
@@ -161,30 +171,87 @@ class MultiPerceptron(object):
 
         return grads
 
+    def back_propagation(self, xs, ts):
+        """
+        calc back propagation of cross_entropy
+        [in] x: train image data
+             t: one hot vector corresponds the answer os x
+        [out]
+             pertial derivatives of MSE
+        """
+        W1, W2 = self.parameters['W1'], self.parameters['W2']
+        b1, b2 = self.parameters['b1'], self.parameters['b2']
+        grads = {}
+        
+        batch_num = xs.shape[0]
+        
+        # forward
+        z0=xs
+        u1=np.matmul(z0,W1)+b1
+        z1=sigmoid(u1)
+        u2=np.matmul(z1,W2)+b2
+        ys=softmax(u2)
+        # backward
+        #calc output layer error
+        delta_output = (ys - ts) / batch_num
+        #backward to hidden layer
+        grads['W2'] = np.dot(z1.T, delta_output)
+        grads['b2'] = np.sum(delta_output, axis=0)
+        #take Hadamard product
+        delta_1 = deriv_sigmoid(u1) * np.dot(delta_output, W2.T)
+        #backward to hidden layer
+        grads['W1'] = np.dot(z0.T, delta_1)
+        grads['b1'] = np.sum(delta_1, axis=0)
+
+        return grads
+
         
 def one_hot_vector(ts):
     label_list=np.identity(10)
-    return [label_list[t] for t in list(map(int,ts))]
+    return np.array([label_list[t] for t in list(map(int,ts))])
 
-ITERATIONS=10
-MINI_BATCH_SIZE=20
+ITERATIONS=5000
+MINI_BATCH_SIZE=1000
 LEARNING_RATE=0.1
+HIDDEN_SIZE=100
 
 def main():
     #get data
+    print(">>>get mnist data<<<")
     mnist=get_mnist_data()
     train_X,valid_X,test_X,train_y,valid_y,test_y=divide_mnist_data()
-    
-    test=test_X[1:10]
-    result=train_y[1:10]
-    hidden_size=40
-    network=MultiPerceptron(hidden_size=40)
-    #show init parameters
-    #network()
+    network=MultiPerceptron(hidden_size=HIDDEN_SIZE)
 
-    for _ in random(ITERATIONS):
+    loss_list=[]
+    accuracy_list=[]
+    #start training
+    for iteration in range(1,ITERATIONS):
+        print("----- %d th -----" % iteration)
+        
+        started=time.time()
+        
         sampled_indices=np.random.choice(len(train_X),MINI_BATCH_SIZE)
-        batch_train_X
+        batch_train_X=train_X[sampled_indices]
+        batch_train_y=train_y[sampled_indices]
+        batch_train_y=one_hot_vector(batch_train_y)
+        grads=network.back_propagation(batch_train_X,batch_train_y)
+        #update
+        for param in ['W1','W2','b1','b2']:
+            network.parameters[param]-= LEARNING_RATE* grads[param]
+
+        end=time.time()
+
+        loss=network.loss(batch_train_X,batch_train_y)
+        accuracy=network.evaluate(valid_X,one_hot_vector(valid_y))
+        loss_list.append(loss)
+        accuracy_list.append(accuracy)
+        print('loss',loss)
+        print('accuracy',100*accuracy,'[%]')
+        print("elapsed time per iteration ",end-started," [sec]")
+
+    plt.plot(loss_list)
+    plt.plot(accuracy_list)
+    plt.show()
 
 if __name__ == '__main__':
     main()
