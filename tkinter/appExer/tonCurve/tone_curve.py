@@ -1,14 +1,14 @@
 import numpy as np
 from scipy.interpolate import interp1d
 from matplotlib import pyplot as plt 
-import communicator
 
-class CurveBrowser():
-    def __init__(self,fig,ax,communicator=communicator.Communicator):
+import notifier
+
+class CurveBrowser(notifier.Notifier):
+    def __init__(self,fig,ax):
         
         self.lastind=0
         self.num_ctrl_pt=9
-        self.communicator=communicator
 
         length=len(np.linspace(0,255,self.num_ctrl_pt))
         self.xs=np.linspace(0,255,self.num_ctrl_pt)[1:length-1]
@@ -56,7 +56,6 @@ class CurveBrowser():
         self.lastind=dataind
         self.update()
 
-
     def on_key_pressed(self,event):
         if self.lastind is None:
             return
@@ -79,8 +78,8 @@ class CurveBrowser():
         dataind=self.lastind
         self.selected.set_visible(True)
         self.selected.set_data(self.xs[dataind],self.ys[dataind])
-
         self.draw_interploration()
+        self.notify()
         self.fig.canvas.draw()
     
     def draw_interploration(self):
@@ -88,6 +87,9 @@ class CurveBrowser():
         xs4func=np.linspace(0,255,num=1000)
         self.curve.set_data(xs4func,approx_func(xs4func))
         self.curve.set_visible(True)
+
+    def notify(self):
+        pass
 
     def on_motion(self,event):
 
