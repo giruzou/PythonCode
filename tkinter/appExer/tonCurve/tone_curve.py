@@ -1,27 +1,35 @@
 import numpy as np
 from scipy.interpolate import interp1d
 from matplotlib import pyplot as plt 
+import communicator
 
 class CurveBrowser():
-    def __init__(self,fig,ax):
+    def __init__(self,fig,ax,communicator=communicator.Communicator):
+        
+        self.lastind=0
         self.num_ctrl_pt=9
+        self.communicator=communicator
+
         length=len(np.linspace(0,255,self.num_ctrl_pt))
         self.xs=np.linspace(0,255,self.num_ctrl_pt)[1:length-1]
         self.ys=np.linspace(0,255,self.num_ctrl_pt)[1:length-1]
+        
         ax.plot([0,255],[0,255],'o', ms=12,alpha=0.4,
                             color='b')
-        ax.plot(np.linspace(0,255,100),np.linspace(0,255,100),'--',color='gray')
+        #draw dotted line of y=x
+        ax.plot(np.linspace(0,255,100),
+                    np.linspace(0,255,100),'--',color='gray')
 
 
-        self.lastind=0
         self.selected, =ax.plot([self.xs[0]],[self.ys[0]],'o', ms=12,alpha=0.4,
                             color='red', visible=False)
+
         self.moved, =ax.plot([self.xs[0]],[self.ys[0]],'o', ms=12,alpha=0.4,
                             color='green', visible=False)
 
         self.plotted, = ax.plot(self.xs,self.ys,'o',picker=5)
         self.curve, =ax.plot([],[],'-',visible=False)
-
+        self.draw_interploration()
         self.movedxy=None
         self.fig=fig
         self.ax=ax
@@ -68,12 +76,18 @@ class CurveBrowser():
     def update(self):
         if self.lastind is None:
             return 
-
         dataind=self.lastind
         self.selected.set_visible(True)
         self.selected.set_data(self.xs[dataind],self.ys[dataind])
-        self.draw_interpolation()
+
+        self.draw_interploration()
         self.fig.canvas.draw()
+    
+    def draw_interploration(self):
+        approx_func=interp1d([0]+list(self.xs)+[255],[0]+list(self.ys)+[255])
+        xs4func=np.linspace(0,255,num=1000)
+        self.curve.set_data(xs4func,approx_func(xs4func))
+        self.curve.set_visible(True)
 
     def on_motion(self,event):
 
@@ -83,17 +97,15 @@ class CurveBrowser():
             return
 
         xpress,ypress=self.pressed_loc        
-        print(event,xpress,ypress)
 
         dx=event.xdata-xpress
         dy=event.ydata-ypress
 
         xnew,ynew=dx+self.xs[self.lastind],dy+self.ys[self.lastind]
-        print(xnew,ynew)
         self.moved.set_visible(True)
         self.moved.set_data([xnew],[ynew])
-        self.fig.canvas.draw()
         self.movedxy=(xnew,ynew)
+        self.update()
 
     def on_release(self,event):
 
@@ -109,19 +121,8 @@ class CurveBrowser():
 
         self.plotted.set_data(self.xs,self.ys)
 
-        self.fig.canvas.draw()
-        self.update()
         self.movedxy=None
-
-    def draw_interpolation(self):
-
-        approx_func=interp1d([0]+list(self.xs)+[255],[0]+list(self.ys)+[255])
-        xs4func=np.linspace(0,255,num=1000)
-        self.curve.set_data(xs4func,approx_func(xs4func))
-        self.curve.set_visible(True)
-
-
-
+        self.update()
 
 def main():
     fig, ax=plt.subplots(figsize=(5,5))
