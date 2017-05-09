@@ -8,17 +8,17 @@ from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
 from tone_curve import CurveBrowser
+from scipy.misc import imread
 
 
-class MatplotlibWindow2(object):
+
+
+class ImageViewer(object):
     def __init__(self,root):
         self.root=root
         self.fig,self.ax=plt.subplots()
-        xs=np.arange(-np.pi,np.pi,0.001)
-        ys=np.sin(xs)
-        self.curve, =self.ax.plot(xs,ys)
-        self.ax.set_xlim([0,255])
-        self.ax.set_ylim([0,255])
+        self.img= imread("test1.bmp")
+        self.img_canvas=self.ax.imshow(self.img,'gray')
         plot_frame=Frame(self.root)
         self.root.add(plot_frame)
         canvas=FigureCanvasTkAgg(self.fig,master=plot_frame)
@@ -32,7 +32,9 @@ class ToneCurve(CurveBrowser):
         self.listener=listener
 
     def notify(self):
-        self.listener.curve.set_data(self.xs,self.ys)
+        tone_curve=self.tone_curve
+        self.listener.img=tone_curve(self.listener.img)
+        self.listener.img_canvas.set_data(self.listener.img)
         self.listener.fig.canvas.draw()
 
 
@@ -78,7 +80,7 @@ def pack_windows(root):
     
     plot_window=PanedWindow()
     main_paned_window.add(plot_window)
-    plot_window=MatplotlibWindow2(plot_window)
+    plot_window=ImageViewer(plot_window)
     plot_window.canvas.get_tk_widget().pack(fill=tk.BOTH,expand=True)
 
     tone_window=ToneCurveViewer(sub_tone_paned_window,plot_window)
