@@ -83,9 +83,9 @@ class CurveBrowser(notifier.Notifier):
         self.fig.canvas.draw()
     
     def draw_interploration(self):
-        approx_func=interp1d([0]+list(self.xs)+[255],[0]+list(self.ys)+[255])
+        self.tone_curve=interp1d([0]+list(self.xs)+[255],[0]+list(self.ys)+[255])
         xs4func=np.linspace(0,255,num=1000)
-        self.curve.set_data(xs4func,approx_func(xs4func))
+        self.curve.set_data(xs4func,self.tone_curve(xs4func))
         self.curve.set_visible(True)
 
     def notify(self):
