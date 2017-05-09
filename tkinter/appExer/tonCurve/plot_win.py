@@ -8,17 +8,38 @@ from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
 from tone_curve import CurveBrowser
+
+"""
+note
+if you will distribute others to whom you want not disclose this scripts
+try to use 'pyinstaller' module
+Usage Part 1.
+install python 3.4 (many developer say it does not work well on python 3.5 )
+so please make vertual environments
+> conda create -n installenv python=3.4 numpy matplotlib scipy
+Usage Part 2.
+then activate installenv
+> activate installenv
+Usage Part 3.
+build python code into .exe form
+(installenv) > pip install pyinstaller
+(installenv) > pyinstaller plot_win.py --onefile --noconsole
+
+Remark
+when run plot_win.exe I can't initialize this app and occur error
+'fail to run script plot_win'
+I had some experiments and found that image reading library disturbs 
+initializing this app e.g.
 from scipy.misc import imread
-
-
+from PIL import Image
+"""
 
 
 class ImageViewer(object):
     def __init__(self,root):
         self.root=root
         self.fig,self.ax=plt.subplots()
-        #self.img=imread("test1.bmp")
-        self.img= np.random.randint(0,255,(1024,1024))
+        self.img=np.ones(100*100).reshape(100,100)
         self.draw_zone=self.ax.imshow(self.img,'gray')
         plot_frame=Frame(self.root)
         self.root.add(plot_frame)
