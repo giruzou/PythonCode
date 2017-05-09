@@ -32,14 +32,15 @@ I had some experiments and found that image reading library disturbs
 initializing this app e.g.
 from scipy.misc import imread
 from PIL import Image
+but opencv library cv2 works!!!!!!
 """
-
+import cv2
 
 class ImageViewer(object):
     def __init__(self,root):
         self.root=root
         self.fig,self.ax=plt.subplots()
-        self.img=np.ones(100*100).reshape(100,100)
+        self.img=cv2.imread('test1.bmp',0)
         self.draw_zone=self.ax.imshow(self.img,'gray')
         plot_frame=Frame(self.root)
         self.root.add(plot_frame)
