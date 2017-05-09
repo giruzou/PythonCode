@@ -17,8 +17,8 @@ class ImageViewer(object):
     def __init__(self,root):
         self.root=root
         self.fig,self.ax=plt.subplots()
-        self.img=imread("test1.bmp")
-        #self.img= np.random.randint(0,255,(1024,1024))
+        #self.img=imread("test1.bmp")
+        self.img= np.random.randint(0,255,(1024,1024))
         self.draw_zone=self.ax.imshow(self.img,'gray')
         plot_frame=Frame(self.root)
         self.root.add(plot_frame)
