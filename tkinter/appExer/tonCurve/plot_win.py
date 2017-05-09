@@ -17,8 +17,9 @@ class ImageViewer(object):
     def __init__(self,root):
         self.root=root
         self.fig,self.ax=plt.subplots()
-        self.img= imread("test1.bmp")
-        self.img_canvas=self.ax.imshow(self.img,'gray')
+        self.img=imread("test1.bmp")
+        #self.img= np.random.randint(0,255,(1024,1024))
+        self.draw_zone=self.ax.imshow(self.img,'gray')
         plot_frame=Frame(self.root)
         self.root.add(plot_frame)
         canvas=FigureCanvasTkAgg(self.fig,master=plot_frame)
@@ -33,8 +34,8 @@ class ToneCurve(CurveBrowser):
 
     def notify(self):
         tone_curve=self.tone_curve
-        self.listener.img=tone_curve(self.listener.img)
-        self.listener.img_canvas.set_data(self.listener.img)
+        toned=img=tone_curve(self.listener.img)
+        self.listener.draw_zone.set_data(toned)
         self.listener.fig.canvas.draw()
 
 
