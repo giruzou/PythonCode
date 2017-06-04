@@ -4,6 +4,7 @@ import socket
 import getopt
 import argparse
 import threading
+import subprocess
 
 
 def client_sender(args, buf):
@@ -45,17 +46,17 @@ def server_loop(args):
     while True:
         client_socket, addr = server.accept()
         client_thread = threading.Thread(
-                target=client_handler, args=(client_socket,))
+                target=client_handler, args=(args,client_socket,))
         client_thread.start()
 
-def run_command(args):
-    command=args.command
+def run_command(command):
     command=command.rstrip()
 
     try :
         output = subprocess.check_output(
                     command, stderr=subprocess.STDOUT, shell=True)
-    except:
+    except Exception as e:
+        print(e)
         output="Failed to execute command.\r\n"
 
     return output
@@ -101,12 +102,14 @@ def parse_arguments():
                          " for incoming connection",
                          default=False, action='store_true')
     parser.add_argument("-e", "--execute", help="execute the given file upon"
-                         "receiving a connection")
+                         "receiving a connection",
+                         type=str,default="")
     parser.add_argument("-c", "--command", help="initialize command shell",
                         default=False, action='store_true')
     parser.add_argument("-u", "--upload-destination",
                          help="upon receiving connection upload a"
-                         "a file and write to [destination]")
+                         "a file and write to [destination]",
+                         type=str,default="")
     parser.add_argument('-p','--port',help="specify port number",type=int,default=9999)
     parser.add_argument("-t","--target",type=str,default="")
     return parser.parse_args()
