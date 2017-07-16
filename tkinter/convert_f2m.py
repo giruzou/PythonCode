@@ -1,7 +1,6 @@
 import tkinter as tk 
 from tkinter import ttk 
 
-
 def main():
     root=tk.Tk()
     root.title("Feet to Meters")
