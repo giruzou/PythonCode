@@ -1,6 +1,8 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from os.path import join, basename, dirname
+import random
+
 """
 make class that corresponds to askgoma.py.
 very important reference:
@@ -42,19 +44,32 @@ class App():
         self.canvas.place(x=0, y=0)
 
     def set_layout(self):
-        question_label = tk.Label(text="what do you want ?", bg='white')
-        question_label.place(x=int(0.3 * self.width), y=int(0.1 * self.height))
-        question_label.config(font=("Courier", 44))
+        self.question_label = tk.Label(text="what do you want ?", bg='white')
+        self.question_label.place(x=int(0.3 * self.width), y=int(0.1 * self.height))
+        self.question_label.config(font=("Courier", 44))
 
-        ask_entry = tk.Entry(width=12, bd=2)
-        ask_entry.place(x=int(0.1 * self.width), y=int(0.4 * self.height))
+        self.ask_entry = tk.Entry(width=12, bd=2)
+        self.ask_entry.place(x=int(0.1 * self.width), y=int(0.4 * self.height))
 
-        ask_button = tk.Button(text="Ask")
-        ask_button.place(x=int(0.2 * self.width), y=int(0.5 * self.height))
+        self.ask_button = tk.Button(text="Ask")
+        self.ask_button.place(x=int(0.2 * self.width), y=int(0.5 * self.height))
+        self.ask_button['command']=self.ask_clicked
 
-        answer_label = tk.Label(text=".............", bg="white")
-        answer_label.place(x=int(0.3 * self.width), y=int(0.8 * self.height))
-        answer_label.config(font=("Courier",50))
+        self.answer_label = tk.Label(text=".............", bg="white")
+        self.answer_label.place(x=int(0.3 * self.width), y=int(0.8 * self.height))
+        self.answer_label.config(font=("Courier",25))
+    
+    def ask_clicked(self):
+        value=self.ask_entry.get()
+        if len(value)==0:
+            self.answer_label["text"]="キュイ．"
+        else:
+            ret="キ"
+            for _ in value:
+                word=["キ","ュ","イ","-","ン"][random.randrange(0, 5)]
+                ret+=word
+            self.answer_label["text"]=ret
+
     def mainloop(self):
         self.master.mainloop()
 
