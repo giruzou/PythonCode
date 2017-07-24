@@ -17,9 +17,15 @@ def act_shallow_search():
     repo = git.Repo(LOCAL_REPOSITORY)
     branch = 'develop'
     max_count = 10
-    for commit in repo.iter_commits(branch, max_count=max_count):
+    for commit in repo.iter_commits(branch, max_count=None):
         print("---------------------------")
+
         for item in ITEMS:
+            if item=='parents':
+                print(item,"=")
+                for p in eval('commit.%s' % item):
+                    print(p)
+            else:
                 print(item, "=", eval('commit.%s' % item))
 
 
