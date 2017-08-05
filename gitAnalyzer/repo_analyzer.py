@@ -17,7 +17,7 @@ def act_shallow_search():
     repo = git.Repo(LOCAL_REPOSITORY)
     branch = 'develop'
     max_count = 10
-    for commit in repo.iter_commits(branch, max_count=None):
+    for commit in repo.iter_commits(branch, max_count=10):
         print("---------------------------")
 
         for item in ITEMS:
@@ -90,7 +90,7 @@ def act_deep_search():
 
 def main():
     act_shallow_search()
-    # act_deep_search()
+    #act_deep_search()
 
 if __name__ == '__main__':
     main()
