@@ -44,20 +44,49 @@ class Repository(object):
         self.commits = [Commit(obj, self.items) for obj in objects]
         return self.commits
 
+class Author(object):
+    def __init__(self,author,commits,repo_info):
+        self.author=author
+        self.commits=commits
+        self.repo_info=repo_info
+
+    def analyze(self):
+        # show commit share
+        self.share_rate=100.0*len(self.commits)/len(self.repo_info)
+        # prepare branch name
+        name_revs = [commit.name_rev for commit in self.commits]
+        self.branch_names = set()
+        for name_rev in name_revs:
+            hexsha, branch_name = name_rev.split(" ")
+            branch_name = branch_name.split("~")[0]
+            self.branch_names.add(branch_name)
+        # show stats
+        self.stat_totals=[]
+        for commit in self.commits:
+            self.stat_totals.append((commit.stats.total['insertions'],
+                                        commit.stats.total['deletions']))
+        #commit_datatime
+        self.authored_datetimes=[]
+        for commit in self.commits:
+            self.authored_datetimes.append(commit.authored_datetime)
+
+
 
 def main():
     repository = Repository(LOCAL_REPOSITORY, ITEMS)
     main_branch = 'develop'
     repo_info = repository.extract_commits(main_branch)
-    # for commit in repo_info:
+    # show all raw information
+    #for commit in repo_info:
     #    commit.show()
-    authors = defaultdict(list)
+    # collect authors
+    author_commit_dict = defaultdict(list)
     for commit in repo_info:
-        authors[commit.author].append(commit)
+        author_commit_dict[commit.author].append(commit)
+    #initialize Author classes corresponds author(i.e. comitter)
+    for author,commits in author_commit_dict.items():
+        Author(author,commits,repo_info).analyze()
 
-    print("commit contribute share")
-    for key, value in authors.items():
-        print(key, 100.0*len(value)/len(repo_info), "%")
 
 
 if __name__ == '__main__':
