@@ -1,10 +1,9 @@
 from flask import Flask, render_template
+app = Flask(__name__)
 
-app=Flask(__name__)
-
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html',message="Hello")
+    return render_template("index.html",message="Hi")
 
 def main():
     app.run(port=9999,debug=True)
