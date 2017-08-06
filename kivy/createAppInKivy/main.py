@@ -1,5 +1,8 @@
 from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
 
+class AddLocationForm(BoxLayout):
+    pass
 
 class WeatherApp(App):
     pass
