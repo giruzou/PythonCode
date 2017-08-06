@@ -1,22 +1,17 @@
-BoxLayout:
+AddLocationForm:
+
+<AddLocationForm@BoxLayout>:
     orientation: 'vertical'
     BoxLayout:
-        size_hint_y: 3
+        height: "40dp"
+        size_hint_y: None
+        TextInput:
+            size_hint_x: 50
         Button:
-            size_hint_x: 1
-            text:"size hint x 1"
+            text:"Search"
+            size_hint_x: 25
         Button:
-            size_hint_x: 2 
-            text:"size hint x 2"
-        Button:
-            size_hint_x: 3
-            text:"size hint x 3"
-    BoxLayout:
-        size_hint_y: 1
-        Button:
-            size_hint_x: 1
-        Button:
-            size_hint_x: 0.75
-        Button:
-            size_hint_x: 0.25
-
+            text: 'Current Location'
+            size_hint_x: 25
+    ListView:
+        item_strings: ["Palo Alto, MX","Palo Alto, US"]
