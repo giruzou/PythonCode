@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Bouncing ball</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <h1>refresh rate = {{rate}} </h1>
+    <div>
+        <input type="button" onClick="location.href='http://localhost:{{port}}/20'" value="20">
+        <input type="button" onClick="location.href='http://localhost:{{port}}/40'" value="40">
+        <input type="button" onClick="location.href='http://localhost:{{port}}/60'" value="60">
+        <input type="button" onClick="location.href='http://localhost:{{port}}/120'" value="120">
+    </div>
+    <canvas id="canvas" width="700" height="500"></canvas>
+    <script type="text/javascript">
+        var rate={{rate}}
+    </script>
+    <script src="/static/js/bouncing-ball.js"></script>
+</body>
+
+</html>
