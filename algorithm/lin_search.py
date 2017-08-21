@@ -2,40 +2,31 @@ import random
 import copy
 import time
 from numba import jit
+from array_creator import create_test_set
+from measure import get_elapsed_data
 
-def shuffle_list(original):
-    shuffled=copy.copy(original)
-    random.shuffle(shuffled)
-    return shuffled
-
-def create_test_set(size,trial):
-    original=list(range(size))
-    return [(random.choice(original),shuffle_list(original)) for _ in range(trial)]
-
-
-def main():
-    size=100
-    trial=10000
-    test_set=create_test_set(size,trial)
-    original=list(range(size))
-
-    start=time.time()
+@get_elapsed_data
+def scratch_lin_search(test_set):
+    hit=False
     for key,arr in test_set:
         for i in arr:
             if i==key:
                 break
-    end=time.time()
 
-    print(end-start, ['sec'])
-
-    start=time.time()
+@get_elapsed_data
+def std_search(test_set):
     for key, arr in test_set:
         if key in arr:
             continue
-    end=time.time()
 
-    print(end-start, ['sec'])
+def main():
+    size=100000
+    trial=1
+    test_set=create_test_set(size,trial)
+    original=list(range(size))
 
+    print(scratch_lin_search(test_set))
+    print(std_search(test_set))
 
 if __name__ == '__main__':
     main()
