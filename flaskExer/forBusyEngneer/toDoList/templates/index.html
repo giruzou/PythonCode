@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form action="{{url_for('send') }}" method="post">
+<input type="text" name="msg" value="">
+<input type="submit" value="send">
+</form>
+
+{% if alert %}
+<p> {{alert}} </p>
+{% endif %}
+
+<form action="{{url_for('delete_data')}}" method="post" enctype="multipart/form-data">
+
+<ul>
+{% for entry in result %}
+    <li>
+    <input type="checkbox" name="action" value="{{entry[0] }}"> {{entry[1]}}:{{entry[2]}}
+    </li>
+{% endfor %}
+</ul>
+<input type="submit" value="delete">
+</form>
+
+{% endblock %}

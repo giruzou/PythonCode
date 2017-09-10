@@ -19,7 +19,7 @@ def send():
         img_file=request.files['img_file']
         if img_file and allowed_file(img_file.filename):
             filename = secure_filename(img_file.filename)
-            img_file.save('./uploads/'+img_file.filename)
+            img_file.save('./uploads/'+filename)
             return render_template('index.html')
         else:
             return "<p>permission denied</p>"
