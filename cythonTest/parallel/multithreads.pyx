@@ -6,7 +6,7 @@ from cython.parallel cimport prange
 from cython.parallel cimport parallel
 
 THOUSAND =1024
-FACTOR=100
+FACTOR=200
 NUM_TOTAL_ELEMENTS = FACTOR * THOUSAND * THOUSAND
 
 X1=np.random.uniform(-1.0,1.0,NUM_TOTAL_ELEMENTS)
