@@ -10,7 +10,7 @@ def ope2(a,b,power,N):
     return (a-b)*omega(power,N)
 
 def FFT_2(a,b):
-    return ope1(a,b),ope2(a,b,0,2)
+    return [ope1(a,b),ope2(a,b,0,2)]
 
 def FFT(xs,N):
     if N==2:
@@ -21,13 +21,15 @@ def FFT(xs,N):
         for i in range(half_len):
             a,b=xs[i],xs[i+half_len]
             xs_former.append(ope1(a,b))
-        ys_formet=list(FFT(xs_former,N//2))
+        ys_former=FFT(xs_former,N//2)
+        
         xs_latter=[]
         for i in range(half_len):
             a,b=xs[i],xs[i+half_len]
             xs_latter.append(ope2(a,b,i,N))
-        ys_latter=list(FFT(xs_latter,N//2))
-        return ys_formet+ys_latter
+        ys_latter=FFT(xs_latter,N//2)
+
+        return ys_former+ys_latter
 
 def calc_FFT(xs):
     N=len(xs)
@@ -38,8 +40,7 @@ def calc_FFT(xs):
     ys=[None for _ in range(len(outs))]
     for i in range(len(outs)):
         bit=format(i,'0{}b'.format(int(np.log2(N))))
-        reversed_bit=bit[::-1]
-        ys[int(reversed_bit,2)]=outs[i]
+        ys[int(bit[::-1],2)]=outs[i]
     return ys
 
 def main():
