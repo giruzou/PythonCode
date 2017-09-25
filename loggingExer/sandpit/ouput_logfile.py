@@ -1,5 +1,5 @@
 import logging
-logging.basicConfig(level='DEBUG', filename='blue_ox.log')
+logging.basicConfig(level='DEBUG', filename='output_logfile.log')
 
 logger=logging.getLogger("bunyan")
 logging.debug("where is my axe?")

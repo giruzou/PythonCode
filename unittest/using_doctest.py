@@ -1,5 +1,3 @@
-import doctest
-
 """
 doctest を用いた単体テストを試すコードです．
 単体テストを実行したい関数に説明を記述する docstring にプログラマーが期待する入力コードを実行します．
@@ -17,9 +15,7 @@ def add(x,y):
     True
     """
     return x+y
-
-def main():
-    doctest.testmod()
     
 if __name__ == '__main__':
-    main()
+    import doctest
+    doctest.testmod()
