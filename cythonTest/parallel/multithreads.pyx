@@ -1,4 +1,6 @@
+#Reference:https://www.isus.jp/products/python-distribution/thread-parallelism-in-cython/
 cimport cython
+
 import numpy as np 
 cimport openmp 
 from libc.math cimport log
