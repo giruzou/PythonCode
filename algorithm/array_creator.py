@@ -1,11 +1,11 @@
-from numpy import random
+import numpy as np 
 import copy
 
 def shuffle_list(original):
     shuffled=copy.copy(original)
-    random.shuffle(shuffled)
+    np.random.shuffle(shuffled)
     return shuffled
 
 def create_test_set(size,trial):
     original=list(range(size))
-    return [(random.choice(original),shuffle_list(original)) for _ in range(trial)]
+    return [(np.random.choice(original),shuffle_list(original)) for _ in range(trial)]
