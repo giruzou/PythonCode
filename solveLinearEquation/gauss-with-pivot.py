@@ -1,9 +1,21 @@
 import numpy as np
+
+#Example2
 a=np.matrix([[2,4,6],
              [1,-1,5],
              [4,1,-2]],dtype='float64')
 b=np.matrix([28,7,21],dtype='float64').T
 x=np.matrix([None]*3,dtype='float64').T
+
+
+#Example1
+a=np.matrix([[0,4,5,2],
+             [1,0,2,-6],
+             [4,1,0,-2],
+             [1,7,1,0]],dtype='float64')
+b=np.matrix([9,-3,1,-3],dtype='float64').T
+x=np.matrix([None]*4,dtype='float64').T
+
 #for check sum
 ori_a=a
 #define extended coefficient matrix of eq ax=b
