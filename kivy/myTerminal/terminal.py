@@ -1,5 +1,4 @@
 from kivy.app import App
-from kivy.uix.button import Label
 from kivy.clock import Clock
 import subprocess
 import threading
