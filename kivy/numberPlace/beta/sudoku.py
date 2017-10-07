@@ -78,11 +78,15 @@ class SudokuApp(App):
     def on_start(self):
         main_grid = self.root.ids.main_grid
         for (k, l) in product(range(3), repeat=2):
-            sub_grid = SubGrid(id="sub_{}_{}".format(str(k), str(l)))
+            sub_grid = SubGrid(id="block_{}_{}".format(str(k), str(l)))
             for (i, j) in product(range(3), repeat=2):
                 sub_grid.add_widget(
-                    Cell(id="v_{}_{}".format(str(3*k+i), str(3*l+j))))
+                    Cell(id="cell_{}_{}".format(str(3*k+i), str(3*l+j))))
             main_grid.add_widget(sub_grid)
+
+    def _parse_idx(self, widget):
+        i, j = widget.id.split("_")[1:]
+        return int(i), int(j)
 
     def solve(self):
         grid = lambda i, j: z3.Int("grid[%d,%d]" % (i, j))
@@ -92,8 +96,7 @@ class SudokuApp(App):
         for sub_grid in sub_grids:
             block = sub_grid.children
             for cell in block:
-                i, j = cell.id.split("_")[1:]
-                i, j = int(i), int(j)
+                i, j = self._parse_idx(cell)
                 if cell.text.isnumeric():
                     problem[i][j] = int(cell.text)
                 else:
@@ -105,8 +108,7 @@ class SudokuApp(App):
             for sub_grid in sub_grids:
                 block = sub_grid.children
                 for cell in block:
-                    i, j = cell.id.split("_")[1:]
-                    i, j = int(i), int(j)
+                    i, j = self._parse_idx(cell)
                     cell.text = str(model[grid(i, j)])
         else:
             print(result)
