@@ -7,14 +7,13 @@ from kivy.uix.button import Label, Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.dropdown import DropDown
 
 
 class MainGrid(FocusBehavior, GridLayout):
 
-    def __init__(self,**kwargs):
-        super(MainGrid,self).__init__(**kwargs)
-        self.shift_down=False
+    def __init__(self, **kwargs):
+        super(MainGrid, self).__init__(**kwargs)
+        self.shift_down = False
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         """Based on FocusBehavior that provides automatic keyboard
@@ -27,7 +26,6 @@ class MainGrid(FocusBehavior, GridLayout):
         """Based on FocusBehavior that provides automatic keyboard
         access, key release will be used to select children.
         """
-        print("up keycode", keycode)
         if 'shift' in keycode[1]:
             self.shift_down = False
 
@@ -48,10 +46,6 @@ class MainGrid(FocusBehavior, GridLayout):
             button.countdown()
         else:
             button.countup()
-
-
-class CustomDropDown(BoxLayout):
-    pass
 
 
 class CustomButton(Button):
@@ -84,25 +78,24 @@ class SudokuApp(App):
         grid = lambda i, j: z3.Int("grid[%d,%d]" % (i, j))
         print("Start to solve")
         children = self.root.ids.main_grid.children
-        problem=[[0]*9 for _ in range(9)]
+        problem = [[0]*9 for _ in range(9)]
         for child in children:
-            i,j=child.id.split("_")[1:]
-            i,j=int(i),int(j)
+            i, j = child.id.split("_")[1:]
+            i, j = int(i), int(j)
             if child.text.isnumeric():
-                problem[i][j]=int(child.text)
+                problem[i][j] = int(child.text)
             else:
-                problem[i][j]=0
-        solver=Z3Solver(problem)
-        result=solver.solve()
+                problem[i][j] = 0
+        solver = Z3Solver(problem)
+        result = solver.solve()
         if result == z3.sat:
-            model=solver.model()
+            model = solver.model()
             for child in children:
-                i,j=child.id.split("_")[1:]
-                i,j=int(i),int(j)
-                child.text=str(model[grid(i,j)])
+                i, j = child.id.split("_")[1:]
+                i, j = int(i), int(j)
+                child.text = str(model[grid(i, j)])
         else:
             print(result)
-            
 
     def reset(self):
         print("Reset")
