@@ -12,7 +12,7 @@ def client_sender(args, buf):
     try:
         client.connect((args.target, args.port))
         if len(buf):
-            client.send(buf.encode('utf-8'))
+            client.send(buf)
         while True:
             recv_len = 1
             response = ""
@@ -88,16 +88,14 @@ def client_handler(args, client_socket):
 
     if args.command:
         prompt = "<BHP:#>"
-        client_socket.send(prompt.encode('utf-8'))
+        client_socket.send(prompt)
 
         while True:
             cmd_buffer = ""
-            while '\n' not in cmd_buffer:
-                received= client_socket.recv(1024)
-                received=received.decode('utf-8')
-                cmd_buffer+=received
+            while "\n" not in cmd_buffer:
+                cmd_buffer += client_socket.recv(1024)
             response = run_command(cmd_buffer)
-            response += prompt.encode('utf-8')
+            response += prompt
             client_socket.send(response)
 
 
