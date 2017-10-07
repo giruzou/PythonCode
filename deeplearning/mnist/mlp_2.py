@@ -95,7 +95,7 @@ def numerical_gradient(f, x):
 def get_mnist_data(data_home=None):
     """
     load data on your directry ~/scikit_learn_data/mldata/
-    if data does'nt exist, it downloads the data from site.
+    if data doesn't exist, it downloads the data from site.
     """
     mnist = fetch_mldata('MNIST original')
     return mnist
@@ -184,8 +184,8 @@ class MultiPerceptron(object):
     def back_propagation(self, xs, ts):
         """
         calc back propagation of cross_entropy
-        [in] x: train image data
-             t: one hot vector corresponds the answer of x
+        [in] xs: train image data
+             ts: one hot vector corresponds the answer of x
         [out]
              pertial derivatives of MSE
         """
