@@ -87,7 +87,13 @@ class SudokuApp(App):
             main_grid.add_widget(sub_grid)
 
     def solve(self):
-        self.root.ids.message.text = "Start To Solve"
+        self.solve_thread = threading.Thread(target=self._solve)
+        self.solve_thread.start()
+
+    def _solve(self):
+        self.root.ids.reset.disabled = True
+        self.root.ids.solve.text = "Stop"
+        self.root.ids.message.text = "Start To Solve..."
         sub_grids = self.root.ids.main_grid.children
         problem = [[0]*9 for _ in range(9)]
 
@@ -103,12 +109,12 @@ class SudokuApp(App):
         if result == z3.sat:
             model = solver.model()
             grid = lambda i, j: z3.Int("grid[%d,%d]" % (i, j))
-            for (i, j) in product(range(9), repeat=2):
+            for (i, j) in product(range(Z3Solver.GRID_SIZE), repeat=2):
                 self.cells[(i, j)].text = str(model[grid(i, j)])
-            self.root.ids.message.text = "Got Answer"
+                self.root.ids.message.text = "Got Answer"
         else:
             self.root.ids.message.text = "Fail To Solve"
-            print(result)
+        self.root.ids.reset.disabled = False
 
     def reset(self):
         self.root.ids.message.text = "Reset"
