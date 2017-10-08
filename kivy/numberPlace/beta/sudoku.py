@@ -11,17 +11,24 @@ from kivy.clock import Clock
 
 
 class MainGrid(GridLayout):
+    pass
+
+
+class SubGrid(GridLayout):
+    pass
+
+
+class Cell(FocusBehavior, Button):
+    DIC = {0: "*", 1: "1", 2: "2", 3: "3", 4: "4",
+           5: "5", 6: "6", 7: "7", 8: "8", 9: "9"}
 
     def __init__(self, **kwargs):
-        super(MainGrid, self).__init__(**kwargs)
-        self.shift_down = False
-
-
-class SubGrid(FocusBehavior, GridLayout):
-
-    def __init__(self, **kwargs):
-        super(SubGrid, self).__init__(**kwargs)
-        self.shift_down = False
+        super(Cell, self).__init__(**kwargs)
+        self.counter = 0
+        self.text = Cell.DIC[0]
+        self.bind(on_touch_down=self.button_touch_down)
+        self.skip = False
+        self.shift_down=False
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         """Based on FocusBehavior that provides automatic keyboard
@@ -37,33 +44,20 @@ class SubGrid(FocusBehavior, GridLayout):
         if 'shift' in keycode[1]:
             self.shift_down = False
 
-    def add_widget(self, widget):
-        """ Override the adding of widgets so we can bind and catch their
-        *on_touch_down* events. """
-        widget.bind(on_touch_down=self.button_touch_down)
-        return super(SubGrid, self).add_widget(widget)
-
     def button_touch_down(self, button, touch):
         """ Use collision detection to select buttons when the touch occurs
         within their area. """
-        if button.collide_point(*touch.pos):
-            self.update_button_text(button)
-
-    def update_button_text(self, button):
-        if self.shift_down:
-            button.countdown()
+        if self.skip == False:
+            if button.collide_point(*touch.pos):
+                self.update_cell_value(button)
         else:
-            button.countup()
+            return
 
-
-class Cell(Button):
-    DIC = {0: "*", 1: "1", 2: "2", 3: "3", 4: "4",
-           5: "5", 6: "6", 7: "7", 8: "8", 9: "9"}
-
-    def __init__(self, **kwargs):
-        super(Cell, self).__init__(**kwargs)
-        self.counter = 0
-        self.text = Cell.DIC[0]
+    def update_cell_value(self, button):
+        if self.shift_down:
+            self.countdown()
+        else:
+            self.countup()
 
     def countup(self):
         self.counter = (self.counter+1) % 10
@@ -78,7 +72,7 @@ class SudokuApp(App):
 
     def __init__(self, **kwargs):
         super(SudokuApp, self).__init__(**kwargs)
-        self.counter = 0
+        self.progress_counter = 0
 
     def on_start(self):
         self.cells = dict()
@@ -94,8 +88,8 @@ class SudokuApp(App):
     def progress(self, nap):
         prog = ['|', '/', '-', '\\']
         self.root.ids.message.text = "Start To Solve..." + \
-            prog[self.counter % len(prog)]
-        self.counter += 1
+            prog[self.progress_counter % len(prog)]
+        self.progress_counter += 1
 
     def solve(self):
         self.solve_thread = threading.Thread(target=self._solve)
@@ -105,7 +99,8 @@ class SudokuApp(App):
     def _solve(self):
         self.root.ids.reset.disabled = True
         self.root.ids.solve.disabled = True
-
+        for cell in self.cells.values():
+            cell.skip = True
         problem = [[0]*9 for _ in range(9)]
         for (i, j) in product(range(9), repeat=2):
             cell = self.cells[(i, j)]
@@ -126,6 +121,9 @@ class SudokuApp(App):
         self.root.ids.reset.disabled = False
         self.root.ids.solve.disabled = False
         Clock.unschedule(self.progress)
+        for cell in self.cells.values():
+            cell.skip=False
+        self.progress_counter = 0
 
     def reset(self):
         self.root.ids.message.text = "Reset"
