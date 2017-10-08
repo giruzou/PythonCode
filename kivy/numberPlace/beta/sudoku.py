@@ -15,21 +15,18 @@ class MainGrid(GridLayout):
     pass
 
 
-class SubGrid(GridLayout):
-    pass
-
-
-class Cell(FocusBehavior, Button):
-    DIC = {0: "*", 1: "1", 2: "2", 3: "3", 4: "4",
-           5: "5", 6: "6", 7: "7", 8: "8", 9: "9"}
+class SubGrid(FocusBehavior,GridLayout):
 
     def __init__(self, **kwargs):
-        super(Cell, self).__init__(**kwargs)
-        self.counter = 0
-        self.text = Cell.DIC[0]
-        self.bind(on_touch_down=self.button_touch_down)
-        self.skip = False
+        super(SubGrid, self).__init__(**kwargs)
         self.shift_down = False
+        self.skip = False
+
+    def add_widget(self, widget):
+        """ Override the adding of widgets so we can bind and catch their
+        *on_touch_down* events. """
+        widget.bind(on_touch_down=self.button_touch_down)
+        return super(SubGrid, self).add_widget(widget)
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         """Based on FocusBehavior that provides automatic keyboard
@@ -48,17 +45,27 @@ class Cell(FocusBehavior, Button):
     def button_touch_down(self, button, touch):
         """ Use collision detection to select buttons when the touch occurs
         within their area. """
-        if self.skip == False:
-            if button.collide_point(*touch.pos):
-                self.update_cell_value(button)
-        else:
-            return
+        if button.collide_point(*touch.pos):
+            self.update_cell_value(button)
 
     def update_cell_value(self, button):
-        if self.shift_down:
-            self.countdown()
+        if self.skip:
+            return
         else:
-            self.countup()
+            if self.shift_down:
+                button.countdown()
+            else:
+                button.countup()
+
+
+class Cell(Button):
+    DIC = {0: "*", 1: "1", 2: "2", 3: "3", 4: "4",
+           5: "5", 6: "6", 7: "7", 8: "8", 9: "9"}
+
+    def __init__(self, **kwargs):
+        super(Cell, self).__init__(**kwargs)
+        self.counter = 0
+        self.text = Cell.DIC[0]
 
     def countup(self):
         self.counter = (self.counter+1) % 10
@@ -99,8 +106,8 @@ class SudokuApp(App):
     def _solve(self):
         self.root.ids.reset.disabled = True
         self.root.ids.solve.disabled = True
-        for cell in self.cells.values():
-            cell.skip = True
+        for sub_grid in self.root.ids.main_grid.children:
+            sub_grid.skip=True
         problem = [[0]*9 for _ in range(9)]
         for (i, j) in product(range(9), repeat=2):
             cell = self.cells[(i, j)]
@@ -118,11 +125,13 @@ class SudokuApp(App):
                 self.root.ids.message.text = "Got Answer"
         else:
             self.root.ids.message.text = "Fail To Solve"
+
         self.root.ids.reset.disabled = False
         self.root.ids.solve.disabled = False
+        for sub_grid in self.root.ids.main_grid.children:
+            sub_grid.skip=False
+        
         Clock.unschedule(self.progress_msg)
-        for cell in self.cells.values():
-            cell.skip = False
 
     def reset(self):
         self.root.ids.message.text = "Reset"
