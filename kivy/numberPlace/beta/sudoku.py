@@ -92,10 +92,7 @@ class SudokuApp(App):
 
     def _solve(self):
         self.root.ids.reset.disabled = True
-        self.root.ids.solve.text = "Stop"
-        self.root.ids.message.text = "Start To Solve..."
-        sub_grids = self.root.ids.main_grid.children
-        problem = [[0]*9 for _ in range(9)]
+        self.root.ids.solve.disabled = True
 
         for (i, j) in product(range(9), repeat=2):
             cell = self.cells[(i, j)]
