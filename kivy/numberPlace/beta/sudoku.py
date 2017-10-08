@@ -87,7 +87,7 @@ class SudokuApp(App):
             main_grid.add_widget(sub_grid)
 
     def solve(self):
-        self.root.ids.message.text="Start To Solve"
+        self.root.ids.message.text = "Start To Solve"
         sub_grids = self.root.ids.main_grid.children
         problem = [[0]*9 for _ in range(9)]
 
@@ -105,17 +105,17 @@ class SudokuApp(App):
             grid = lambda i, j: z3.Int("grid[%d,%d]" % (i, j))
             for (i, j) in product(range(9), repeat=2):
                 self.cells[(i, j)].text = str(model[grid(i, j)])
-            self.root.ids.message.text="Got Answer"
+            self.root.ids.message.text = "Got Answer"
         else:
-            self.root.ids.message.text="Fail To Solve"
+            self.root.ids.message.text = "Fail To Solve"
             print(result)
 
     def reset(self):
-        self.root.ids.message="Reset"
+        self.root.ids.message = "Reset"
         sub_grids = self.root.ids.main_grid.children
         for cell in self.cells.values():
             cell.text = '*'
-            cell.counter=0
+            cell.counter = 0
 
 
 def main():
