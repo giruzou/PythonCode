@@ -1,5 +1,6 @@
 from itertools import product
 import threading
+from itertools import cycle
 import z3
 from z3solver import Z3Solver
 from kivy.app import App
@@ -72,7 +73,7 @@ class SudokuApp(App):
 
     def __init__(self, **kwargs):
         super(SudokuApp, self).__init__(**kwargs)
-        self.progress_counter = 0
+        self.progress=cycle(['|', '/', '-', '\\'])
 
     def on_start(self):
         self.cells = dict()
@@ -85,16 +86,15 @@ class SudokuApp(App):
                 sub_grid.add_widget(cell)
             main_grid.add_widget(sub_grid)
 
-    def progress(self, nap):
+    def progress_msg(self, nap):
         prog = ['|', '/', '-', '\\']
-        self.root.ids.message.text = "Start To Solve..." + \
-            prog[self.progress_counter % len(prog)]
-        self.progress_counter += 1
+        from itertools import cycle
+        self.root.ids.message.text = "Start To Solve..." + next(self.progress)
 
     def solve(self):
         self.solve_thread = threading.Thread(target=self._solve)
         self.solve_thread.start()
-        Clock.schedule_interval(self.progress, 0.1)
+        Clock.schedule_interval(self.progress_msg, 0.1)
 
     def _solve(self):
         self.root.ids.reset.disabled = True
@@ -120,10 +120,9 @@ class SudokuApp(App):
             self.root.ids.message.text = "Fail To Solve"
         self.root.ids.reset.disabled = False
         self.root.ids.solve.disabled = False
-        Clock.unschedule(self.progress)
+        Clock.unschedule(self.progress_msg)
         for cell in self.cells.values():
             cell.skip=False
-        self.progress_counter = 0
 
     def reset(self):
         self.root.ids.message.text = "Reset"
