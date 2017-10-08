@@ -111,7 +111,7 @@ class SudokuApp(App):
             print(result)
 
     def reset(self):
-        self.root.ids.message = "Reset"
+        self.root.ids.message.text = "Reset"
         sub_grids = self.root.ids.main_grid.children
         for cell in self.cells.values():
             cell.text = '*'
