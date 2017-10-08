@@ -76,50 +76,46 @@ class Cell(Button):
 class SudokuApp(App):
 
     def on_start(self):
+        self.cells = dict()
         main_grid = self.root.ids.main_grid
         for (k, l) in product(range(3), repeat=2):
-            sub_grid = SubGrid(id="block_{}_{}".format(str(k), str(l)))
+            sub_grid = SubGrid(id="block_{}_{}".format(k, l))
             for (i, j) in product(range(3), repeat=2):
-                sub_grid.add_widget(
-                    Cell(id="cell_{}_{}".format(str(3*k+i), str(3*l+j))))
+                cell = Cell(id="cell_{}_{}".format(3*k+i, 3*l+j))
+                self.cells[(3*k+i, 3*l+j)] = cell
+                sub_grid.add_widget(cell)
             main_grid.add_widget(sub_grid)
 
-    def _parse_idx(self, widget):
-        i, j = widget.id.split("_")[1:]
-        return int(i), int(j)
-
     def solve(self):
-        grid = lambda i, j: z3.Int("grid[%d,%d]" % (i, j))
-        print("Start to solve")
+        self.root.ids.message.text="Start To Solve"
         sub_grids = self.root.ids.main_grid.children
         problem = [[0]*9 for _ in range(9)]
-        for sub_grid in sub_grids:
-            block = sub_grid.children
-            for cell in block:
-                i, j = self._parse_idx(cell)
-                if cell.text.isnumeric():
-                    problem[i][j] = int(cell.text)
-                else:
-                    problem[i][j] = 0
+
+        for (i, j) in product(range(9), repeat=2):
+            cell = self.cells[(i, j)]
+            if cell.text.isnumeric():
+                problem[i][j] = int(cell.text)
+            else:
+                problem[i][j] = 0
+
         solver = Z3Solver(problem)
         result = solver.solve()
         if result == z3.sat:
             model = solver.model()
-            for sub_grid in sub_grids:
-                block = sub_grid.children
-                for cell in block:
-                    i, j = self._parse_idx(cell)
-                    cell.text = str(model[grid(i, j)])
+            grid = lambda i, j: z3.Int("grid[%d,%d]" % (i, j))
+            for (i, j) in product(range(9), repeat=2):
+                self.cells[(i, j)].text = str(model[grid(i, j)])
+            self.root.ids.message.text="Got Answer"
         else:
+            self.root.ids.message.text="Fail To Solve"
             print(result)
 
     def reset(self):
-        print("Reset")
+        self.root.ids.message="Reset"
         sub_grids = self.root.ids.main_grid.children
-        for sub_grid in sub_grids:
-            block = sub_grid.children
-            for cell in block:
-                cell.text = '*'
+        for cell in self.cells.values():
+            cell.text = '*'
+            cell.counter=0
 
 
 def main():
