@@ -1,6 +1,5 @@
 # -*- mode: python -*-
 from kivy.deps import sdl2, glew
-from z3 import *
 
 block_cipher = None
 
