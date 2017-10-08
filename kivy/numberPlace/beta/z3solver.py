@@ -10,13 +10,13 @@ class Z3Solver(z3.Solver):
     def __init__(self, problem):
         super(Z3Solver, self).__init__()
         self.problem = problem
-        self._set_problem()
+        self._set_init_cells()
 
     def solve(self):
         self._set_restriction()
         return self.check()
 
-    def _set_problem(self):
+    def _set_init_cells(self):
         N = Z3Solver.GRID_SIZE
         for i, j in product(range(N), range(N)):
             if self.problem[i][j] > 0:
@@ -81,6 +81,19 @@ def main():
                 [4, 0, 0, 7, 0, 0, 0, 0, 0]]
     solve_sudoku(problem2)
 
+    problem3 = [[1, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 2, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 3, 0, 0, 0, 8, 0, 0],
+                [0, 0, 8, 4, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 5, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 6, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 7, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 8, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 9]]
+
+    solve_sudoku(problem3)
+
+    solve_sudoku([[0]*Z3Solver.GRID_SIZE for _ in range(Z3Solver.GRID_SIZE)])
 
 if __name__ == '__main__':
     main()
