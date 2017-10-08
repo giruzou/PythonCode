@@ -11,27 +11,17 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 
 
-class MainGrid(GridLayout):
-    pass
-
-
-class SubGrid(FocusBehavior,GridLayout):
+class MainGrid(FocusBehavior, GridLayout):
 
     def __init__(self, **kwargs):
-        super(SubGrid, self).__init__(**kwargs)
+        super(MainGrid, self).__init__(**kwargs)
         self.shift_down = False
-        self.skip = False
-
-    def add_widget(self, widget):
-        """ Override the adding of widgets so we can bind and catch their
-        *on_touch_down* events. """
-        widget.bind(on_touch_down=self.button_touch_down)
-        return super(SubGrid, self).add_widget(widget)
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         """Based on FocusBehavior that provides automatic keyboard
         access, key presses will be used to select children.
         """
+        print('press down')
         if 'shift' in keycode[1]:
             self.shift_down = True
 
@@ -39,8 +29,22 @@ class SubGrid(FocusBehavior,GridLayout):
         """Based on FocusBehavior that provides automatic keyboard
         access, key release will be used to select children.
         """
+        print('press up')
         if 'shift' in keycode[1]:
             self.shift_down = False
+
+
+class SubGrid(GridLayout):
+
+    def __init__(self, **kwargs):
+        super(SubGrid, self).__init__(**kwargs)
+        self.skip = False
+
+    def add_widget(self, widget):
+        """ Override the adding of widgets so we can bind and catch their
+        *on_touch_down* events. """
+        widget.bind(on_touch_down=self.button_touch_down)
+        return super(SubGrid, self).add_widget(widget)
 
     def button_touch_down(self, button, touch):
         """ Use collision detection to select buttons when the touch occurs
@@ -52,7 +56,7 @@ class SubGrid(FocusBehavior,GridLayout):
         if self.skip:
             return
         else:
-            if self.shift_down:
+            if self.parent.shift_down:
                 button.countdown()
             else:
                 button.countup()
@@ -107,7 +111,7 @@ class SudokuApp(App):
         self.root.ids.reset.disabled = True
         self.root.ids.solve.disabled = True
         for sub_grid in self.root.ids.main_grid.children:
-            sub_grid.skip=True
+            sub_grid.skip = True
         problem = [[0]*9 for _ in range(9)]
         for (i, j) in product(range(9), repeat=2):
             cell = self.cells[(i, j)]
@@ -129,8 +133,8 @@ class SudokuApp(App):
         self.root.ids.reset.disabled = False
         self.root.ids.solve.disabled = False
         for sub_grid in self.root.ids.main_grid.children:
-            sub_grid.skip=False
-        
+            sub_grid.skip = False
+
         Clock.unschedule(self.progress_msg)
 
     def reset(self):
