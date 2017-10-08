@@ -10,13 +10,13 @@ class Z3Solver(z3.Solver):
     def __init__(self, problem):
         super(Z3Solver, self).__init__()
         self.problem = problem
-        self._set_problem()
+        self._set_init_cells()
 
     def solve(self):
         self._set_restriction()
         return self.check()
 
-    def _set_problem(self):
+    def _set_init_cells(self):
         N = Z3Solver.GRID_SIZE
         for i, j in product(range(N), range(N)):
             if self.problem[i][j] > 0:
