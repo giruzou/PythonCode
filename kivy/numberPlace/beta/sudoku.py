@@ -7,6 +7,7 @@ from kivy.uix.button import Label, Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
 
 class MainGrid(GridLayout):
@@ -75,6 +76,10 @@ class Cell(Button):
 
 class SudokuApp(App):
 
+    def __init__(self, **kwargs):
+        super(SudokuApp, self).__init__(**kwargs)
+        self.counter = 0
+
     def on_start(self):
         self.cells = dict()
         main_grid = self.root.ids.main_grid
@@ -86,23 +91,30 @@ class SudokuApp(App):
                 sub_grid.add_widget(cell)
             main_grid.add_widget(sub_grid)
 
+    def progress(self, nap):
+        prog = ['|', '/', '-', '\\']
+        self.root.ids.message.text = "Start To Solve..." + \
+            prog[self.counter % len(prog)]
+        self.counter += 1
+
     def solve(self):
         self.solve_thread = threading.Thread(target=self._solve)
         self.solve_thread.start()
+        Clock.schedule_interval(self.progress, 0.1)
 
     def _solve(self):
         self.root.ids.reset.disabled = True
         self.root.ids.solve.disabled = True
 
+        problem = [[0]*9 for _ in range(9)]
         for (i, j) in product(range(9), repeat=2):
             cell = self.cells[(i, j)]
             if cell.text.isnumeric():
                 problem[i][j] = int(cell.text)
-            else:
-                problem[i][j] = 0
 
         solver = Z3Solver(problem)
         result = solver.solve()
+
         if result == z3.sat:
             model = solver.model()
             grid = lambda i, j: z3.Int("grid[%d,%d]" % (i, j))
@@ -112,6 +124,8 @@ class SudokuApp(App):
         else:
             self.root.ids.message.text = "Fail To Solve"
         self.root.ids.reset.disabled = False
+        self.root.ids.solve.disabled = False
+        Clock.unschedule(self.progress)
 
     def reset(self):
         self.root.ids.message.text = "Reset"
