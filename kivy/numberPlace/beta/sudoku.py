@@ -29,7 +29,7 @@ class Cell(FocusBehavior, Button):
         self.text = Cell.DIC[0]
         self.bind(on_touch_down=self.button_touch_down)
         self.skip = False
-        self.shift_down=False
+        self.shift_down = False
 
     def keyboard_on_key_down(self, window, keycode, text, modifiers):
         """Based on FocusBehavior that provides automatic keyboard
@@ -73,7 +73,7 @@ class SudokuApp(App):
 
     def __init__(self, **kwargs):
         super(SudokuApp, self).__init__(**kwargs)
-        self.progress=cycle(['|', '/', '-', '\\'])
+        self.progress = cycle(['|', '/', '-', '\\'])
 
     def on_start(self):
         self.cells = dict()
@@ -122,7 +122,7 @@ class SudokuApp(App):
         self.root.ids.solve.disabled = False
         Clock.unschedule(self.progress_msg)
         for cell in self.cells.values():
-            cell.skip=False
+            cell.skip = False
 
     def reset(self):
         self.root.ids.message.text = "Reset"
