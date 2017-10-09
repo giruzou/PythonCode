@@ -21,7 +21,6 @@ class MainGrid(FocusBehavior, GridLayout):
         """Based on FocusBehavior that provides automatic keyboard
         access, key presses will be used to select children.
         """
-        print('press down')
         if 'shift' in keycode[1]:
             self.shift_down = True
 
@@ -29,7 +28,6 @@ class MainGrid(FocusBehavior, GridLayout):
         """Based on FocusBehavior that provides automatic keyboard
         access, key release will be used to select children.
         """
-        print('press up')
         if 'shift' in keycode[1]:
             self.shift_down = False
 
