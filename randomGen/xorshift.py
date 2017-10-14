@@ -8,7 +8,7 @@ https://ask.helplib.com/1591921
 from numba import jit
 
 
-def xorshit(generator, seed=None):
+def xorshift(generator, seed=None):
     ret = seed
     def inner():
         nonlocal ret
@@ -29,7 +29,7 @@ def xor32(y=2463534242):
 
 
 @jit
-def xor64(_x=88172645463325252,x=88172645463325252):
+def xor64(_x=88172645463325252, x=88172645463325252):
     _x = _x ^ (_x << 13)
     _x = _x ^ (_x >> 7)
     _x = _x ^ (_x << 17)
@@ -66,7 +66,7 @@ def uniform(rand, begin=0, end=1):
 def calc_pi(generator):
     u01 = uniform(generator)
     counter = 0
-    N = 100000000
+    N = 100000
     for i in range(N):
         x = u01()
         y = u01()
@@ -75,19 +75,21 @@ def calc_pi(generator):
     print(4.0*counter/N)
 
 
-def main_():
-    random32 = xorshit(xor32, seed=(1,))
+def apply_example():
+    random32 = xorshift(xor32)
     calc_pi(random32)
-    random64 = xorshit(xor64, seed=(3,))
+    random64 = xorshift(xor64)
     calc_pi(random64)
-    random128 = xorshit(xor128, seed=(4, 3, 2, 1))
+    random96 = xorshift(xor96)
+    calc_pi(random96)
+    random128 = xorshift(xor128)
     calc_pi(random128)
 
-
 def main():
-    random64 = xorshit(xor64)
+    random64=xorshift(xor64)
     for i in range(100):
-        r = random64()
-        print(r)
+        print(random64())
+
+    apply_example()
 if __name__ == '__main__':
     main()
