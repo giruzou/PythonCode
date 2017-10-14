@@ -29,11 +29,11 @@ def xor32(y=2463534242):
 
 
 @jit
-def xor64(x=88172645463325252):
-    x = x ^ (x << 13)
-    x = x ^ (x >> 7)
-    x = x ^ (x << 17)
-    return x & 0xFFFFFFFF,
+def xor64(_x=88172645463325252,x=88172645463325252):
+    _x = _x ^ (_x << 13)
+    _x = _x ^ (_x >> 7)
+    _x = _x ^ (_x << 17)
+    return _x, _x & 0xFFFFFFFF
 
 
 @jit
