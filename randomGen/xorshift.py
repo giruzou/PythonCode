@@ -22,9 +22,9 @@ def xorshit(generator, seed=None):
 
 @jit
 def xor32(y=2463534242):
-    y = y ^ (y << 13)
-    y = y ^ (y >> 17)
-    y = y ^ (y << 5)
+    y = y ^ (y << 13 & 0xFFFFFFFF)
+    y = y ^ (y >> 17 & 0xFFFFFFFF)
+    y = y ^ (y << 5 & 0xFFFFFFFF)
     return y & 0xFFFFFFFF,
 
 
@@ -34,6 +34,17 @@ def xor64(x=88172645463325252):
     x = x ^ (x >> 7)
     x = x ^ (x << 17)
     return x & 0xFFFFFFFF,
+
+
+@jit
+def xor96(x=123456789, y=362436069, z=521288629):
+    t = (x ^ (x << 3 & 0xFFFFFFFF)) ^ (
+        y ^ (y >> 19 & 0xFFFFFFFF)) ^ (
+        z ^ (z << 6 & 0xFFFFFFFF))
+    x = y
+    y = z
+    z = t
+    return x, y, z
 
 
 @jit
@@ -64,7 +75,7 @@ def calc_pi(generator):
     print(4.0*counter/N)
 
 
-def main():
+def main_():
     random32 = xorshit(xor32, seed=(1,))
     calc_pi(random32)
     random64 = xorshit(xor64, seed=(3,))
@@ -72,5 +83,11 @@ def main():
     random128 = xorshit(xor128, seed=(4, 3, 2, 1))
     calc_pi(random128)
 
+
+def main():
+    random64 = xorshit(xor64)
+    for i in range(100):
+        r = random64()
+        print(r)
 if __name__ == '__main__':
     main()
