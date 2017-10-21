@@ -2,11 +2,9 @@ from libc.stdlib cimport rand, RAND_MAX
 from cython.parallel import prange
 from cython cimport boundscheck, wraparound
 
-cdef int NUM = 1000000000
-
 @boundscheck(False)
 @wraparound(False)
-def monte():
+cpdef double monte(int NUM):
     cdef :
         int counter = 0
         int i=0
@@ -19,4 +17,4 @@ def monte():
             counter += 1
 
     pi = 4.0*counter/NUM
-    print(pi)
+    return pi
