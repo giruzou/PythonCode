@@ -1,0 +1,3 @@
+import monte
+
+monte.monte()
