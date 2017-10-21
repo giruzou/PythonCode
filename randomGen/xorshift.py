@@ -28,12 +28,12 @@ def xor32(y=2463534242):
     return y & 0xFFFFFFFF,
 
 
-@jit
-def xor64(_x=88172645463325252, x=88172645463325252):
-    _x = _x ^ (_x << 13)
-    _x = _x ^ (_x >> 7)
-    _x = _x ^ (_x << 17)
-    return _x, _x & 0xFFFFFFFF
+#@jit
+#def xor64(_x=88172645463325252, x=88172645463325252):
+#    _x = _x ^ (_x << 13)
+#    _x = _x ^ (_x >> 7)
+#    _x = _x ^ (_x << 17)
+#    return _x, _x & 0xFFFFFFFF
 
 
 @jit
@@ -78,17 +78,17 @@ def calc_pi(generator):
 def apply_example():
     random32 = xorshift(xor32)
     calc_pi(random32)
-    random64 = xorshift(xor64)
-    calc_pi(random64)
+    #random64 = xorshift(xor64)
+    #calc_pi(random64)
     random96 = xorshift(xor96)
     calc_pi(random96)
     random128 = xorshift(xor128)
     calc_pi(random128)
 
 def main():
-    random64=xorshift(xor64)
+    random32=xorshift(xor32)
     for i in range(100):
-        print(random64())
+        print(random32())
 
     apply_example()
 if __name__ == '__main__':
