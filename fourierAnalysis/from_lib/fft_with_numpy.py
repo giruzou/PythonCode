@@ -16,8 +16,9 @@ def main():
     amplitude_spectrum=np.abs(fourier_value)
     print(len(frq),len(amplitude_spectrum))
 
-    plt.plot(frq,amplitude_spectrum,'-')
-    plt.xlim([0,5])
+    maxplot=len(frq)//2
+    plt.plot(frq[:maxplot],amplitude_spectrum[:maxplot],'-')
+    #plt.xlim([0,5])
     plt.show()
 
 
