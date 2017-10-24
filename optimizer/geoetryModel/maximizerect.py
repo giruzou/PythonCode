@@ -31,18 +31,25 @@ def add_cond_on_segment(optimizer, b, e, x, y):
 
 def search_rectangle(b1, e1, b2, e2, b3, e3, b4, e4):
     model = Model(name="maximizeInnerRect")
-    x1 = model.addVar(name='x1')
-    x2 = model.addVar(name='x2')
-    x3 = model.addVar(name='x3')
-    x4 = model.addVar(name='x4')
 
-    y1 = model.addVar(name='y1')
-    y2 = model.addVar(name='y2')
-    y3 = model.addVar(name='y3')
-    y4 = model.addVar(name='y4')
+    t1 = model.addVar(name='t1')
+    t2 = model.addVar(name='t2')
+    t3 = model.addVar(name='t3')
+    t4 = model.addVar(name='t4')
 
-    vs = {"x1": x1, "x2": x2, "x3": x3, "x4": x4,
-          "y1": y1, "y2": y2, "y3": y3, "y4": y4}
+    x1 = b1[0]+t1*(e1[0]-b1[0])
+    y1 = b1[1]+t1*(e1[1]-b1[1])
+
+    x2 = b2[0]+t2*(e2[0]-b2[0])
+    y2 = b2[1]+t2*(e2[1]-b2[1])
+
+    x3 = b3[0]+t3*(e3[0]-b3[0])
+    y3 = b3[1]+t3*(e3[1]-b3[1])
+
+    x4 = b4[0]+t4*(e4[0]-b4[0])
+    y4 = b4[1]+t4*(e4[1]-b4[1])
+
+    vs = {"t1": t1, "t2": t2, "t3": t3, "t4": t4}
 
     add_cond_on_segment(model, b1, e1, x1, y1)
     add_cond_on_segment(model, b2, e2, x2, y2)
@@ -54,8 +61,9 @@ def search_rectangle(b1, e1, b2, e2, b3, e3, b4, e4):
     add_cond_orthogonal(model, x3, y3, x4, y4, x1, y1)
     add_cond_orthogonal(model, x4, y4, x1, y1, x2, y2)
 
-    obj = max((x2-x1)*(y4-y1)-(x4-x1)*(y2-y1),-(x2-x1)*(y4-y1)+(x4-x1)*(y2-y1))
-    model.setObjective(obj, GRB.MINIMIZE)
+    area = (x2-x1)*(y4-y1)-(x4-x1)*(y2-y1)
+    obj = max(area, -area)  # must be obj takes positive value
+    model.setObjective(obj, GRB.MAXIMIZE)
     print(model)
     model.optimize()
     fig = plt.figure()
@@ -70,10 +78,22 @@ def search_rectangle(b1, e1, b2, e2, b3, e3, b4, e4):
             print(v.VarName, v.X)
             vs[v.VarName] = v.X
 
-        plotline(ax, [vs["x1"], vs["y1"]], [vs["x2"], vs["y2"]], 'k')
-        plotline(ax, [vs["x2"], vs["y2"]], [vs["x3"], vs["y3"]], 'k')
-        plotline(ax, [vs["x3"], vs["y3"]], [vs["x4"], vs["y4"]], 'k')
-        plotline(ax, [vs["x4"], vs["y4"]], [vs["x1"], vs["y1"]], 'k')
+        x1 = b1[0]+vs['t1']*(e1[0]-b1[0])
+        y1 = b1[1]+vs['t1']*(e1[1]-b1[1])
+
+        x2 = b2[0]+vs['t2']*(e2[0]-b2[0])
+        y2 = b2[1]+vs['t2']*(e2[1]-b2[1])
+
+        x3 = b3[0]+vs['t3']*(e3[0]-b3[0])
+        y3 = b3[1]+vs['t3']*(e3[1]-b3[1])
+
+        x4 = b4[0]+vs['t4']*(e4[0]-b4[0])
+        y4 = b4[1]+vs['t4']*(e4[1]-b4[1])
+
+        plotline(ax, [x1, y1], [x2, y2], 'k')
+        plotline(ax, [x2, y2], [x3, y3], 'k')
+        plotline(ax, [x3, y3], [x4, y4], 'k')
+        plotline(ax, [x4, y4], [x1, y1], 'k')
     else:
         print("no solution")
 
@@ -126,8 +146,23 @@ def getexample3():
     search_rectangle(b1, e1, b2, e2, b3, e3, b4, e4)
 
 
+def getexample4():
+    b1 = [0, 0]
+    e1 = [0, 2]
+
+    b2 = [0, 2]
+    e2 = [2, 4]
+
+    b3 = [2, 4]
+    e3 = [2, 2]
+
+    b4 = [2, 2]
+    e4 = [0, 0]
+    search_rectangle(b1, e1, b2, e2, b3, e3, b4, e4)
+
+
 def main():
-    getexample3()
+    getexample4()
 
 if __name__ == '__main__':
     main()
