@@ -66,7 +66,7 @@ def uniform(rand, begin=0, end=1):
 def calc_pi(generator):
     u01 = uniform(generator)
     counter = 0
-    N = 100000
+    N = 1000000
     for i in range(N):
         x = u01()
         y = u01()
@@ -80,15 +80,15 @@ def apply_example():
     calc_pi(random32)
     #random64 = xorshift(xor64)
     #calc_pi(random64)
-    random96 = xorshift(xor96)
-    calc_pi(random96)
-    random128 = xorshift(xor128)
-    calc_pi(random128)
+    #random96 = xorshift(xor96)
+    #calc_pi(random96)
+    #random128 = xorshift(xor128)
+    #calc_pi(random128)
 
 def main():
-    random32=xorshift(xor32)
-    for i in range(100):
-        print(random32())
+    #random32=xorshift(xor32)
+    #for i in range(100):
+    #    print(random32())
 
     apply_example()
 if __name__ == '__main__':
