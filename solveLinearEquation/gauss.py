@@ -29,7 +29,7 @@ def confirm_sympy(a, b, x):
     x = a.solve(b)
 
 
-def verity(a, b, x):
+def verify(a, b, x):
     solveeq_gauss(a, b, x)
     print("gauss x:\n{}".format(x))
     confirm_numpy(a, b, x)
@@ -44,7 +44,7 @@ def test1():
                    [4, 1, -2]], dtype='float64')
     b = np.matrix([28, 7, 21], 'float64').T
     x = np.empty(b.shape)
-    verity(a, b, x)
+    verify(a, b, x)
 
 
 def test2():
@@ -55,7 +55,7 @@ def test2():
                    [1, 7, 1, -2]], dtype='float64')
     b = np.matrix([9, -3, 1, -3], 'float64').T
     x = np.empty(b.shape)
-    verity(a, b, x)
+    verify(a, b, x)
 
 
 def main():

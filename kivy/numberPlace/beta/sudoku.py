@@ -1,8 +1,11 @@
 from itertools import product
+import os 
+import sys
 import threading
 from itertools import cycle
 import z3
 from z3solver import Z3Solver
+import kivy
 from kivy.app import App
 from kivy.uix.button import Label, Button
 from kivy.uix.gridlayout import GridLayout
@@ -143,7 +146,15 @@ class SudokuApp(App):
             cell.counter = 0
 
 
+def resourcePath():
+    '''Returns path containing content - either locally or in pyinstaller tmp file'''
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS)
+
+    return os.path.join(os.path.abspath("."))
+
 def main():
+    kivy.resources.resource_add_path(resourcePath())
     SudokuApp().run()
 
 
