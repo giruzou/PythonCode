@@ -10,7 +10,7 @@ class SubprocessThread(threading.Thread):
         threading.Thread.__init__(self)
         self.cmd = cmd
         self.app = app
-        self.stop_event = threading.Event()
+        self.stop_event = False
 
     def run(self):
         def get_line(cmd):
@@ -25,19 +25,19 @@ class SubprocessThread(threading.Thread):
                     break
 
         for line in get_line(self.cmd):
-            if self.stop_event.is_set():
+            if self.stop_event:
                 break
             self.app.root.ids.output.text += line
         self.app.state = TerminalApp.DONE
 
     def stop(self):
-        self.stop_event.set()
+        self.stop_event=True
 
 
 class TerminalApp(App):
-    WAIT, COMPUTING, DONE, CANCELED = 0, 1, 2, 3
+    STOP, COMPUTING, DONE, CANCELED = 0, 1, 2, 3
     thread_start = False
-    state = WAIT
+    state = STOP
 
     def check_state(self, nap):
         if self.state == TerminalApp.DONE:
@@ -45,21 +45,21 @@ class TerminalApp(App):
             self.thread_start = not self.thread_start
             print("try to stop thread")
             self.cmd_thread.stop()
-            self.state = TerminalApp.WAIT
+            self.state = TerminalApp.STOP
 
         if self.state == TerminalApp.CANCELED:
-            print("STOP")
+            print("CANCELED")
             self.thread_start = not self.thread_start
             print("try to stop thread")
             self.cmd_thread.stop()
-            self.state = TerminalApp.WAIT
+            self.state = TerminalApp.STOP
 
         if self.state == TerminalApp.COMPUTING:
             print("COMPUTING")
             self.root.ids.button.text = 'Stop'
 
-        if self.state == TerminalApp.WAIT:
-            print("WAIT")
+        if self.state == TerminalApp.STOP:
+            print("STOP")
             self.root.ids.button.text = 'Exec'
             Clock.unschedule(self.check_state)
 
