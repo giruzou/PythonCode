@@ -44,8 +44,8 @@ def create_iris_dataset():
     y_test = answer[even]
     return x_train, y_train, x_test, y_test
 
-BATCH, MINI_BATCH = 0, 1
-TRAIN_MODE = MINI_BATCH
+BATCH, MINI_BATCH, ACCUMLATE = 0, 1, 2
+TRAIN_MODE = BATCH
 
 
 def main():
@@ -79,6 +79,22 @@ def main():
                 loss = model(xs, ys)
                 loss.backward()
                 optimizer.update()
+
+    if TRAIN_MODE == ACCUMLATE:
+        n = x_test.shape[0]
+        size = n//3
+        for e in range(epochs):
+            accum_loss=None
+            s = np.random.permutation(n)
+            for i in range(n//size):
+                batch = s[i*size:min((i+1)*size, n)]
+                xs = Variable(x_train[batch])
+                ys = Variable(y_train[batch])
+                model.cleargrads()
+                loss = model(xs, ys)
+                accum_loss=loss if accum_loss is None else accum_loss+loss
+            loss.backward()
+            optimizer.update()
 
             # validate
     predict = model.fwd(Variable(x_test)).data
