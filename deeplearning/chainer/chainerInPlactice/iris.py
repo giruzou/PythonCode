@@ -36,8 +36,8 @@ def create_iris_dataset():
 
     # split dataset into train and test
     index = np.arange(N)
-    odd = [n for n in range(N) if n % 2 == 0]
-    even = [n for n in range(N) if n % 2 == 0]
+    odd =index[1:N:2]
+    even = index[0:N:2]
     x_train = X[odd]
     y_train = answer[odd]
     x_test = X[even]
@@ -45,7 +45,7 @@ def create_iris_dataset():
     return x_train, y_train, x_test, y_test
 
 BATCH, MINI_BATCH, ACCUMLATE = 0, 1, 2
-TRAIN_MODE = BATCH
+TRAIN_MODE = MINI_BATCH
 
 
 def main():
@@ -97,14 +97,12 @@ def main():
             optimizer.update()
 
             # validate
-    predict = model.fwd(Variable(x_test)).data
+    predicts = model.fwd(Variable(x_test)).data
     counter = 0
-    for i in range(predict.shape[0]):
-        p = np.argmax(predict[i])
-        a = np.argmax(y_test[i])
-        if p == a:
+    for p,a in zip(predicts,y_test):
+        if np.argmax(p)==np.argmax(a):
             counter += 1
-    print("accuracy", counter/predict.shape[0])
+    print("accuracy", counter/predicts.shape[0])
 
 if __name__ == '__main__':
     main()

@@ -31,8 +31,8 @@ def create_iris_dataset():
 
     # split dataset into train and test
     index = np.arange(N)
-    odd = [n for n in range(N) if n % 2 == 0]
-    even = [n for n in range(N) if n % 2 == 0]
+    odd =index[1:N:2]
+    even = index[0:N:2]
     x_train = X[odd]
     y_train = Y[odd]
     x_test = X[even]
@@ -97,7 +97,6 @@ def main():
     for i in range(predict.shape[0]):
         p = np.argmax(predict[i])
         a = y_test[i]
-        print(p,a)
         if p == a:
             counter += 1
     print("accuracy", counter/predict.shape[0])
