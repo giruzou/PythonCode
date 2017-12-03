@@ -1,10 +1,12 @@
+from kivy.config import Config
+Config.set('graphics', 'width', 280)
+Config.set('graphics', 'height', 280)
+Config.set('graphics','resizable',0)
+from kivy.core.window import Window
 from kivy.app import App
 from kivy.uix.widget import Widget
-from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
 from kivy.graphics import Color, Line, BindTexture
-from kivy.core.window import Window
-from kivy.config import Config
 from matplotlib import pyplot as plt
 import numpy as np
 from itertools import tee
@@ -34,6 +36,7 @@ class CanvasWidget(Widget):
             return
         if self.locked:
             return
+        print(touch.x,touch.y)
         if 'current_line' in touch.ud:
             touch.ud['current_line'].points += (touch.x, touch.y)
 
@@ -68,9 +71,6 @@ class PaintApp(App):
 
 
 def main():
-    Window.size = (560, 560)
-    Config.set('graphics', 'width', 560)
-    Config.set('graphics', 'width', 560)
     Config.set("input", "mouse", "mouse,disable_multitouch")
     Window.clearcolor = get_color_from_hex("#FFFFFF")
     PaintApp().run()
