@@ -1,8 +1,21 @@
 <CanvasWidget>:
-    Button:
-        text: 'Delete'
-        right: root.right
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 2
+        spacing: 2
+        x:0
         top: root.top
-        width: 100
-        height: 40
-        on_press:root.on_delete
+        Button:
+            text: 'Delete'
+            right: root.right
+            top: root.top
+            width: 70
+            height: 20
+            on_release:root.clear_canvas()
+        Button:
+            text: 'Show'
+            right: root.right
+            top: root.top
+            width: 70
+            height: 20
+            on_release:root.show_info()
