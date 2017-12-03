@@ -36,7 +36,7 @@ def create_iris_dataset():
 
     # split dataset into train and test
     index = np.arange(N)
-    odd =index[1:N:2]
+    odd = index[1:N:2]
     even = index[0:N:2]
     x_train = X[odd]
     y_train = answer[odd]
@@ -56,7 +56,7 @@ def main():
     optimizer.setup(model)
     # execute batch-train
     epochs = 10000
-    
+
     if TRAIN_MODE == BATCH:
         for i in range(epochs):
             xs = Variable(x_train)
@@ -84,7 +84,7 @@ def main():
         n = x_test.shape[0]
         size = n//3
         for e in range(epochs):
-            accum_loss=None
+            accum_loss = None
             s = np.random.permutation(n)
             for i in range(n//size):
                 batch = s[i*size:min((i+1)*size, n)]
@@ -92,15 +92,15 @@ def main():
                 ys = Variable(y_train[batch])
                 model.cleargrads()
                 loss = model(xs, ys)
-                accum_loss=loss if accum_loss is None else accum_loss+loss
+                accum_loss = loss if accum_loss is None else accum_loss+loss
             loss.backward()
             optimizer.update()
 
             # validate
     predicts = model.fwd(Variable(x_test)).data
     counter = 0
-    for p,a in zip(predicts,y_test):
-        if np.argmax(p)==np.argmax(a):
+    for p, a in zip(predicts, y_test):
+        if np.argmax(p) == np.argmax(a):
             counter += 1
     print("accuracy", counter/predicts.shape[0])
 

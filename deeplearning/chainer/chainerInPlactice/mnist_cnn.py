@@ -37,7 +37,11 @@ def main():
     loops=(10,'epoch')
     trainer = training.Trainer(updater,loops)
     trainer.extend(extensions.ProgressBar())
+    print('start to train')
     trainer.run()
+    print('finish to train')
+
+    print("lets predict")
     counter=0
     for t in test:
         img,label=t
@@ -45,7 +49,7 @@ def main():
         predict = np.argmax(model.fwd(x).data)
         if predict==label:
             counter+=1
-
+    print("done")
     print(counter/len(test))
 
 if __name__ == '__main__':
