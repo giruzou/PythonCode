@@ -10,20 +10,17 @@ import numpy as np
 from itertools import tee
 
 
-def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b, c, d = tee(iterable, 4)
-    next(b, None)
-    next(next(c, None), None)
-    next(next(next(d, None), None), None)
-    return zip(a, b, c, d)
-
-
 class CanvasWidget(Widget):
+
+    def __init__(self):
+        super(CanvasWidget, self).__init__()
+        self.locked = False
 
     def on_touch_down(self, touch):
         # avoid painting line on button
         if Widget.on_touch_down(self, touch):
+            return
+        if self.locked:
             return
 
         with self.canvas:
@@ -35,11 +32,15 @@ class CanvasWidget(Widget):
     def on_touch_move(self, touch):
         if Widget.on_touch_down(self, touch):
             return
+        if self.locked:
+            return
         if 'current_line' in touch.ud:
             touch.ud['current_line'].points += (touch.x, touch.y)
 
     def clear_canvas(self):
-        saved = self.children[:]  # copy by writing [:]
+        # copy children by writing [:]
+        saved = self.children[:]
+
         self.clear_widgets()
         self.canvas.clear()
         for widget in saved:
@@ -55,8 +56,9 @@ class CanvasWidget(Widget):
         xs = np.array(all_pts[::2]).astype(np.int)
         ys = np.array(all_pts[1::2]).astype(np.int)
         img[xs, ys] = 1
-        plt.imshow(np.rot90(img))
-        plt.show()
+
+    def lock_draw(self):
+        self.locked = not self.locked
 
 
 class PaintApp(App):
@@ -67,6 +69,8 @@ class PaintApp(App):
 
 def main():
     Window.size = (560, 560)
+    Config.set('graphics', 'width', 560)
+    Config.set('graphics', 'width', 560)
     Config.set("input", "mouse", "mouse,disable_multitouch")
     Window.clearcolor = get_color_from_hex("#FFFFFF")
     PaintApp().run()

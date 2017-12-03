@@ -6,11 +6,11 @@ from bokeh.models import ColumnDataSource, LabelSet
 from bokeh.models.widgets import Slider, RangeSlider, Div
 from bokeh.plotting import figure, show, output_file
 from bokeh.layouts import row, widgetbox
-
+from bokeh.io import curdoc
 
 def func(xs, mu, sigma):
     return 1/(sigma*np.sqrt(2*np.pi))*np.exp(-(xs-mu)**2/(2*sigma**2))
-    # return norm.pdf(xs,mu,sigma)
+    #return norm.pdf(xs,mu,sigma)
 
 
 def get_patches(a, b, xs, mu, sigma):
@@ -73,6 +73,6 @@ for w in ws:
     w.on_change('value', update)
 w = widgetbox(*ws, info)
 root = row([w, p])
-from bokeh.io import curdoc
+
 document = curdoc()
 document.add_root(root)
