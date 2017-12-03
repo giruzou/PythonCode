@@ -53,9 +53,8 @@ def main():
         widget.on_change('value', update_data)
 
     inputs = widgetbox(text, offset, amplitude, phase, freq)
-    plot=row(inputs, f, width=800)
-    document=curdoc()
+    plot = row(inputs, f, width=800)
+    document = curdoc()
     document.add_root(plot)
 
 main()
-
