@@ -2,6 +2,17 @@ from kivy.app import App
 from kivy.clock import Clock
 import subprocess
 import threading
+import psutil
+import time
+"""
+reference:
+https://stackoverflow.com/questions/4789837/how-to-terminate-a-python-subprocess-launched-with-shell-true
+"""
+def kill(proc_pid):
+    process = psutil.Process(proc_pid)
+    for proc in process.children(recursive=True):
+        proc.kill()
+    process.kill()
 
 
 class SubprocessThread(threading.Thread):
@@ -13,9 +24,7 @@ class SubprocessThread(threading.Thread):
         self.stop_event = False
 
     def run(self):
-        def get_line(cmd):
-            proc = subprocess.Popen(
-                self.cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        def get_line(proc):
             while True:
                 line = proc.stdout.readline()
                 if line:
@@ -24,14 +33,18 @@ class SubprocessThread(threading.Thread):
                 if not line and proc.poll() is not None:
                     break
 
-        for line in get_line(self.cmd):
+        proc = subprocess.Popen(
+                self.cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        
+        for line in get_line(proc):
             if self.stop_event:
+                kill(proc.pid)
                 break
             self.app.root.ids.output.text += line
         self.app.state = TerminalApp.DONE
 
     def stop(self):
-        self.stop_event=True
+        self.stop_event = True
 
 
 class TerminalApp(App):
@@ -52,6 +65,7 @@ class TerminalApp(App):
             self.thread_start = not self.thread_start
             print("try to stop thread")
             self.cmd_thread.stop()
+            time.sleep(1)
             self.state = TerminalApp.STOP
 
         if self.state == TerminalApp.COMPUTING:
@@ -62,7 +76,6 @@ class TerminalApp(App):
             print("STOP")
             self.root.ids.button.text = 'Exec'
             Clock.unschedule(self.check_state)
-
 
     def start_command(self):
         if not self.thread_start:
