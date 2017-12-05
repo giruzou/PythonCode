@@ -34,13 +34,13 @@ from scipy.misc import imread
 from PIL import Image
 but opencv library cv2 works!!!!!!
 """
-import cv2
+from scipy.misc import imread
 
 class ImageViewer(object):
     def __init__(self,root):
         self.root=root
         self.fig,self.ax=plt.subplots()
-        self.img=cv2.imread('test1.bmp',0)
+        self.img=imread('test1.bmp',0)
         self.draw_zone=self.ax.imshow(self.img,'gray')
         plot_frame=Frame(self.root)
         self.root.add(plot_frame)
@@ -56,7 +56,7 @@ class ToneCurve(CurveBrowser):
 
     def notify(self):
         tone_curve=self.tone_curve
-        toned=img=tone_curve(self.listener.img)
+        toned=tone_curve(self.listener.img)
         self.listener.draw_zone.set_data(toned)
         self.listener.fig.canvas.draw()
 
