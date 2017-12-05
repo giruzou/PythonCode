@@ -1,6 +1,6 @@
 from kivy.config import Config
-Config.set('graphics', 'width', 280)
-Config.set('graphics', 'height', 280)
+Config.set('graphics', 'width', 560)
+Config.set('graphics', 'height', 560)
 Config.set('graphics','resizable',0)
 from kivy.core.window import Window
 from kivy.app import App
@@ -35,7 +35,6 @@ class CanvasWidget(Widget):
             return
         if self.locked:
             return
-        print(touch.x,touch.y)
         if 'current_line' in touch.ud:
             touch.ud['current_line'].points += (touch.x, touch.y)
 
@@ -55,17 +54,26 @@ class CanvasWidget(Widget):
                 wpts=np.array(w.points)
                 xs=wpts[::2]
                 ys=wpts[1::2]
-                tck,u=interpolate.splprep([xs,ys],s=0)
+                try:
+                    tck,u=interpolate.splprep([xs,ys],s=0)
+                except Exception as e:
+                    print('warn',e)
+                    continue
                 u_new=np.arange(np.min(u),np.max(u),0.01)
                 out=interpolate.splev(u_new,tck)
-                print(out)
                 all_pts += out
-
         img = np.zeros((560+10, 560+10)).astype(np.uint8)
-        xs = np.array(all_pts[::2]).astype(np.int)
-        ys = np.array(all_pts[1::2]).astype(np.int)
-        img[xs, ys] = 1
-        plt.imsave('hoge.png',img)
+        polyx = np.array(all_pts[::2]).astype(np.int)
+        polyy = np.array(all_pts[1::2]).astype(np.int)
+        R=10
+        print(polyx)
+        from itertools import product
+        for xs,ys in zip(polyx,polyy):
+            for x,y in zip(xs,ys):
+                circle=[(x+i,y+j) for (i,j) in product(range(-R,R+1),repeat=2) if i**2+j**2<R**2]
+                for c in circle:
+                    img[c[0],c[1]] = 1
+        plt.imsave('img.png',np.rot90(img))
 
     def lock_draw(self):
         self.locked = not self.locked
