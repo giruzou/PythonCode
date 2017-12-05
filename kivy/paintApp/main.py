@@ -9,8 +9,7 @@ from kivy.utils import get_color_from_hex
 from kivy.graphics import Color, Line, BindTexture
 from matplotlib import pyplot as plt
 import numpy as np
-from itertools import tee
-
+from scipy import interpolate
 
 class CanvasWidget(Widget):
 
@@ -53,12 +52,20 @@ class CanvasWidget(Widget):
         all_pts = []
         for w in self.canvas.children:
             if isinstance(w, Line):
-                all_pts += list(w.points)
+                wpts=np.array(w.points)
+                xs=wpts[::2]
+                ys=wpts[1::2]
+                tck,u=interpolate.splprep([xs,ys],s=0)
+                u_new=np.arange(np.min(u),np.max(u),0.01)
+                out=interpolate.splev(u_new,tck)
+                print(out)
+                all_pts += out
 
         img = np.zeros((560+10, 560+10)).astype(np.uint8)
         xs = np.array(all_pts[::2]).astype(np.int)
         ys = np.array(all_pts[1::2]).astype(np.int)
         img[xs, ys] = 1
+        plt.imsave('hoge.png',img)
 
     def lock_draw(self):
         self.locked = not self.locked
