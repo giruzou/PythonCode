@@ -1,5 +1,6 @@
-import numpy as np 
-
+import os 
+import numpy as np
+import chainer
 from chainer import datasets
 from chainer import Chain, Variable
 from chainer import iterators, optimizers, training
@@ -26,22 +27,35 @@ class CnnModel(Chain):
         h3=F.dropout(F.relu(self.fc1(h2)))
         return self.fc2(h3)
 
-def main():
-    train, test = datasets.get_mnist(ndim=3)
+def train(num_loop):
+    chainer.cuda.get_device_from_id(0).use()
     model=CnnModel()
+    model.to_gpu()
+
     optimizer=optimizers.Adam()
     optimizer.setup(model)
     minibatch_size=1000
+    train, test = datasets.get_mnist(ndim=3)
     iterator = iterators.SerialIterator(train, minibatch_size)
-    updater=training.StandardUpdater(iterator,optimizer)
-    loops=(10,'epoch')
-    trainer = training.Trainer(updater,loops)
+    updater=training.StandardUpdater(iterator,optimizer,device=0)
+    loops=(num_loop,'epoch')
+    if not os.path.exists('result'):
+        os.mkdir('result')
+    trainer = training.Trainer(updater,loops,out='result')
     trainer.extend(extensions.ProgressBar())
+    trainer.extend(extensions.snapshot_object(
+        model, 'cnn_{.updater.epoch}.npz'), trigger=(1,'epoch'))
     print('start to train')
     trainer.run()
     print('finish to train')
 
-    print("lets predict")
+
+def check_accuracy(num_loop):
+    print("lets check_accuracy")
+    train, test = datasets.get_mnist(ndim=3)
+    model=CnnModel()
+    chainer.serializers.load_npz(os.path.join('result','cnn_{}.npz'.format(num_loop)),model)
+    model.to_cpu()
     counter=0
     for t in test:
         img,label=t
@@ -52,5 +66,10 @@ def main():
     print("done")
     print(counter/len(test))
 
+
+def main():
+    num_loop=10
+    train(num_loop)
+    check_accuracy(num_loop)
 if __name__ == '__main__':
     main()
