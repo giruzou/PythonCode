@@ -1,8 +1,8 @@
-from distutils.core import setup
+from setuptools import setup
 
-setup(name='myexample',
+setup(name='myexample2',
       version='1.0',
       description="Trivial Package. Distribution Test Only",
       author='Satoshi Tetasaki',
       author_email="terasakisatoshi.math@gmail.com",
-      packages=['myexample'])
+      packages=['myexample2'])
