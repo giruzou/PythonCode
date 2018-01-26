@@ -7,3 +7,6 @@ TCP_IP/camera_transfer_using_OpenCV/ser_res.txt
 *.pyc
 *.so
 *.o
+*.jpg
+*.jpeg
+*.png
