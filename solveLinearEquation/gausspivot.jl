@@ -1,4 +1,13 @@
 #solve linear equation
+
+#Example1
+a=float([0 4 5 2
+         1 0 2 -6;
+         4 1 0 -2;
+         1 7 1 0])::Array{Float64,2}
+b=float([9,-3, 1, -3])::Array{Float64,1}
+x=float([0, 0, 0, 0])::Array{Float64,1}
+
 function main(a,b,x)
     ori_a=a
     a=hcat(a,b)
@@ -21,13 +30,5 @@ function main(a,b,x)
     println("answer=",x)
     println("check ax-b=",ori_a*x-b)
 end 
-
-#Example1
-a=float([0 4 5 2;
-         1 0 2 -6;
-         4 1 0 -2;
-         1 7 1 0])::Array{Float64,2}
-b=float([9,-3, 1, -3])::Array{Float64,1}
-x=float([0, 0, 0, 0])::Array{Float64,1}
 
 main(a,b,x)
