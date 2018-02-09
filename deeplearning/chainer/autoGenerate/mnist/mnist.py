@@ -14,8 +14,10 @@ class MNISTCONV(chainer.Chain):
     def __init__(self):
         super(MNISTCONV, self).__init__()
         with self.init_scope():
-            self.c1 = L.Convolution2D(1, 8, ksize=3)
-            self.l1 = L.Linear(13*13*8, 10)
+            ksize=5
+            self.c1 = L.Convolution2D(1, 8, ksize=ksize)
+            linear_size=(28-(ksize-1))//2
+            self.l1 = L.Linear(linear_size*linear_size*8, 10)
 
     def __call__(self, x, t=None, train=True):
         h1 = self.c1(x)
@@ -64,7 +66,7 @@ def predict():
             acc+=1
     print(acc/counter)
 def main():
-    #train()
+    train()
     predict()
 if __name__ == '__main__':
     main()
