@@ -106,8 +106,8 @@ def collect_train_patch(traindir):
     return images
 
 
-batch_size = 128
-n_save = 0
+BATCH_SIZE = 512
+RESUME=False
 
 def train():
     model = SuperResolution()
@@ -119,18 +119,24 @@ def train():
 
     images = collect_train_patch('train')
 
-    train_iter = iterators.SerialIterator(images, batch_size, shuffle=True)
+    train_iter = iterators.SerialIterator(images,  BATCH_SIZE, shuffle=True)
     optimizer = optimizers.Adam()
     optimizer.setup(model)
 
     updater = SRUpdater(train_iter, optimizer, device=DEVICE)
-    trainer = training.Trainer(updater, (10000, 'epoch'), out='result')
-    trainer.extend(extensions.ProgressBar())
     snapshot_interval=(1000, 'epoch')
-    trainer.extend(extensions.snapshot_object(model,'dec_iter_{.updater.epoch}.npz'), trigger=snapshot_interval)
+    trainer = training.Trainer(updater, (10000, 'epoch'), out='result')
+    trainer.extend(extensions.snapshot(
+        filename='snapshot_epoch_{.updater.epoch}.npz'),
+                   trigger=snapshot_interval)
+    trainer.extend(extensions.ProgressBar())
+    trainer.extend(extensions.snapshot_object(model,'model_epoch_{.updater.epoch}.npz'), trigger=snapshot_interval)
+    if RESUME:
+        # Resume from a snapshot
+        chainer.serializers.load_npz('result/snapshot_epoch_25.npz', trainer)
     trainer.run()
 
-    chainer.serializers.save_hd5('model.hdf5', model)
+    chainer.serializers.save_hdf5('model.hdf5', model)
 
 
 def main():
