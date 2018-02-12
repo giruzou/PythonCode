@@ -13,9 +13,6 @@ if DEVICE >= 0:
 else:
     xp = np
 
-print("xp=", xp)
-
-
 class SuperResolution(chainer.Chain):
     def __init__(self):
         w1 = chainer.initializers.Normal(scale=0.0378, dtype=None)
@@ -106,8 +103,8 @@ def collect_train_patch(traindir):
     return images
 
 
-BATCH_SIZE = 512
-RESUME=False
+BATCH_SIZE = 1024
+RESUME=True
 
 def train():
     model = SuperResolution()
@@ -124,7 +121,7 @@ def train():
     optimizer.setup(model)
 
     updater = SRUpdater(train_iter, optimizer, device=DEVICE)
-    snapshot_interval=(1000, 'epoch')
+    snapshot_interval=(500, 'epoch')
     trainer = training.Trainer(updater, (10000, 'epoch'), out='result')
     trainer.extend(extensions.snapshot(
         filename='snapshot_epoch_{.updater.epoch}.npz'),
