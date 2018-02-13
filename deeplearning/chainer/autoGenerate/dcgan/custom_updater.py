@@ -38,7 +38,7 @@ class Updater(training.StandardUpdater):
         dis = optimizer_dis.target
 
         # 乱数データを用意
-        rnd = random.uniform(-1, 1, (src.shape[0], 100))
+        rnd = np.random.uniform(-1, 1, (src.shape[0], 100))
         rnd = cp.array(rnd, dtype=cp.float32)
 
         # 画像を生成して認識と教師データから認識
