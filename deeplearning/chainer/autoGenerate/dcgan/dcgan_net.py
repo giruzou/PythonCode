@@ -40,6 +40,8 @@ class Generator(chainer.Chain):
 
 class Discriminator(chainer.Chain):
     def __init__(self):
+        w = chainer.initializers.Normal(scale=0.02, dtype=None)
+        super(Discriminator, self).__init__()
         with self.init_scope():
             self.c0_0 = L.Convolution2D(
                 3, NEURON_SIZE // 8, 3, 1, 1, initialW=w)
