@@ -39,7 +39,7 @@ class Updater(training.StandardUpdater):
 
         # 乱数データを用意
         rnd = np.random.uniform(-1, 1, (src.shape[0], 100))
-        rnd = cp.array(rnd, dtype=cp.float32)
+        rnd = xp.array(rnd, dtype=xp.float32)
 
         # 画像を生成して認識と教師データから認識
         x_fake = gen(rnd)       # 乱数からの生成結果
