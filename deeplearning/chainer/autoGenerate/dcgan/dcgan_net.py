@@ -12,24 +12,24 @@ class Generator(chainer.Chain):
         w = chainer.initializers.Normal(scale=0.02, dtype=None)
         super(Generator, self).__init__()
         with self.init_scope():
-            self.l0 = L.Linear(100, neuron_size * image_size * image_size // 8 // 8,
+            self.l0 = L.Linear(100, NEURON_SIZE * image_size * image_size // 8 // 8,
                                initialW=w)
             self.dc1 = L.Deconvolution2D(
-                neuron_size, neuron_size // 2, 4, 2, 1, initialW=w)
+                NEURON_SIZE, NEURON_SIZE // 2, 4, 2, 1, initialW=w)
             self.dc2 = L.Deconvolution2D(
-                neuron_size // 2, neuron_size // 4, 4, 2, 1, initialW=w)
+                NEURON_SIZE // 2, NEURON_SIZE // 4, 4, 2, 1, initialW=w)
             self.dc3 = L.Deconvolution2D(
-                neuron_size // 4, neuron_size // 8, 4, 2, 1, initialW=w)
+                NEURON_SIZE // 4, NEURON_SIZE // 8, 4, 2, 1, initialW=w)
             self.dc4 = L.Deconvolution2D(
-                neuron_size // 8, 3, 3, 1, 1, initialW=w)
+                NEURON_SIZE // 8, 3, 3, 1, 1, initialW=w)
             self.bn0 = L.BatchNormalization(
-                neuron_size * image_size * image_size // 8 // 8)
-            self.bn1 = L.BatchNormalization(neuron_size // 2)
-            self.bn2 = L.BatchNormalization(neuron_size // 4)
-            self.bn3 = L.BatchNormalization(neuron_size // 8)
+                NEURON_SIZE * image_size * image_size // 8 // 8)
+            self.bn1 = L.BatchNormalization(NEURON_SIZE // 2)
+            self.bn2 = L.BatchNormalization(NEURON_SIZE // 4)
+            self.bn3 = L.BatchNormalization(NEURON_SIZE // 8)
 
     def __call__(self, z):
-        shape = (len(z), neuron_size, image_size // 8, image_size // 8)
+        shape = (len(z), NEURON_SIZE, image_size // 8, image_size // 8)
         h = F.reshape(F.relu(self.bn0(self.l0(z))), shape)
         h = F.relu(self.bn1(self.dc1(h)))
         h = F.relu(self.bn2(self.dc2(h)))
@@ -42,31 +42,31 @@ class Discriminator(chainer.Chain):
     def __init__(self):
         with self.init_scope():
             self.c0_0 = L.Convolution2D(
-                3, neuron_size // 8, 3, 1, 1, initialW=w)
+                3, NEURON_SIZE // 8, 3, 1, 1, initialW=w)
             self.c0_1 = L.Convolution2D(
-                neuron_size // 8, neuron_size // 4, 4, 2, 1, initialW=w)
+                NEURON_SIZE // 8, NEURON_SIZE // 4, 4, 2, 1, initialW=w)
             self.c1_0 = L.Convolution2D(
-                neuron_size // 4, neuron_size // 4, 3, 1, 1, initialW=w)
+                NEURON_SIZE // 4, NEURON_SIZE // 4, 3, 1, 1, initialW=w)
             self.c1_1 = L.Convolution2D(
-                neuron_size // 4, neuron_size // 2, 4, 2, 1, initialW=w)
+                NEURON_SIZE // 4, NEURON_SIZE // 2, 4, 2, 1, initialW=w)
             self.c2_0 = L.Convolution2D(
-                neuron_size // 2, neuron_size // 2, 3, 1, 1, initialW=w)
+                NEURON_SIZE // 2, NEURON_SIZE // 2, 3, 1, 1, initialW=w)
             self.c2_1 = L.Convolution2D(
-                neuron_size // 2, neuron_size, 4, 2, 1, initialW=w)
+                NEURON_SIZE // 2, NEURON_SIZE, 4, 2, 1, initialW=w)
             self.c3_0 = L.Convolution2D(
-                neuron_size, neuron_size, 3, 1, 1, initialW=w)
-            self.l4 = L.Linear(neuron_size * image_size *
+                NEURON_SIZE, NEURON_SIZE, 3, 1, 1, initialW=w)
+            self.l4 = L.Linear(NEURON_SIZE * image_size *
                                image_size // 8 // 8, 1, initialW=w)
             self.bn0_1 = L.BatchNormalization(
-                neuron_size // 4, use_gamma=False)
+                NEURON_SIZE // 4, use_gamma=False)
             self.bn1_0 = L.BatchNormalization(
-                neuron_size // 4, use_gamma=False)
+                NEURON_SIZE // 4, use_gamma=False)
             self.bn1_1 = L.BatchNormalization(
-                neuron_size // 2, use_gamma=False)
+                NEURON_SIZE // 2, use_gamma=False)
             self.bn2_0 = L.BatchNormalization(
-                neuron_size // 2, use_gamma=False)
-            self.bn2_1 = L.BatchNormalization(neuron_size, use_gamma=False)
-            self.bn3_0 = L.BatchNormalization(neuron_size, use_gamma=False)
+                NEURON_SIZE // 2, use_gamma=False)
+            self.bn2_1 = L.BatchNormalization(NEURON_SIZE, use_gamma=False)
+            self.bn3_0 = L.BatchNormalization(NEURON_SIZE, use_gamma=False)
 
     def __call__(self, x):
         h = F.leaky_relu(self.c0_0(x))
