@@ -12,7 +12,7 @@ class Generator(chainer.Chain):
         w = chainer.initializers.Normal(scale=0.02, dtype=None)
         super(Generator, self).__init__()
         with self.init_scope():
-            self.l0 = L.Linear(100, NEURON_SIZE * image_size * image_size // 8 // 8,
+            self.l0 = L.Linear(100, NEURON_SIZE * IMAGE_SIZE * IMAGE_SIZE // 8 // 8,
                                initialW=w)
             self.dc1 = L.Deconvolution2D(
                 NEURON_SIZE, NEURON_SIZE // 2, 4, 2, 1, initialW=w)
@@ -23,13 +23,13 @@ class Generator(chainer.Chain):
             self.dc4 = L.Deconvolution2D(
                 NEURON_SIZE // 8, 3, 3, 1, 1, initialW=w)
             self.bn0 = L.BatchNormalization(
-                NEURON_SIZE * image_size * image_size // 8 // 8)
+                NEURON_SIZE * IMAGE_SIZE * IMAGE_SIZE // 8 // 8)
             self.bn1 = L.BatchNormalization(NEURON_SIZE // 2)
             self.bn2 = L.BatchNormalization(NEURON_SIZE // 4)
             self.bn3 = L.BatchNormalization(NEURON_SIZE // 8)
 
     def __call__(self, z):
-        shape = (len(z), NEURON_SIZE, image_size // 8, image_size // 8)
+        shape = (len(z), NEURON_SIZE, IMAGE_SIZE // 8, IMAGE_SIZE // 8)
         h = F.reshape(F.relu(self.bn0(self.l0(z))), shape)
         h = F.relu(self.bn1(self.dc1(h)))
         h = F.relu(self.bn2(self.dc2(h)))
@@ -55,8 +55,8 @@ class Discriminator(chainer.Chain):
                 NEURON_SIZE // 2, NEURON_SIZE, 4, 2, 1, initialW=w)
             self.c3_0 = L.Convolution2D(
                 NEURON_SIZE, NEURON_SIZE, 3, 1, 1, initialW=w)
-            self.l4 = L.Linear(NEURON_SIZE * image_size *
-                               image_size // 8 // 8, 1, initialW=w)
+            self.l4 = L.Linear(NEURON_SIZE * IMAGE_SIZE *
+                               IMAGE_SIZE // 8 // 8, 1, initialW=w)
             self.bn0_1 = L.BatchNormalization(
                 NEURON_SIZE // 4, use_gamma=False)
             self.bn1_0 = L.BatchNormalization(
