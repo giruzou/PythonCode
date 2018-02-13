@@ -48,9 +48,8 @@ def collect_data():
                         face = ori.rsplit('/', 1)[1]
                         os.system('wget '+ori+' -O portrait/'+face)
                         if face.endswith('.tif') or face.endswith('.tiff'):
-                            pass
                             im=imread(os.path.join('portrait',face))
-                            name,ext=os.path.splitext()
+                            name,ext=os.path.splitext(face)
                             imsave(os.path.join('portrait',name+'.jpg'),im)
                             os.remove('portrait/'+face)
 
