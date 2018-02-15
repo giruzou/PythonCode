@@ -6,7 +6,7 @@ from chainer import training, iterators, optimizers
 from chainer.training import extensions
 from custom_updater import Updater
 import numpy as np
-BATCH_SIZE = 256
+BATCH_SIZE = 10
 DEVICE = 1
 RESUME=False
 def train():

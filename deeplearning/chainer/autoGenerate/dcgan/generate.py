@@ -19,7 +19,7 @@ def generate():
         chainer.cuda.check_cuda_available()
         generator.to_gpu(DEVICE)
 
-    chainer.serializers.load_npz('result/model_gen_epoch_32157.npz', generator)
+    chainer.serializers.load_npz('result/model_gen_epoch_10000.npz', generator)
     num_generate = 100
     rnd = np.random.uniform(-1, 1, (num_generate, 100, 1, 1))
     rnd = xp.array(rnd, dtype=xp.float32)
